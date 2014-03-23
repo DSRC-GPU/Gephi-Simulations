@@ -58,8 +58,14 @@ import org.gephi.visualization.opengl.compatibility.modeler.CompatibilityNodeSph
  * @author Mathieu Bastian
  */
 public class StandardModelClassLibrary implements ModelClassLibrary {
+    
+    
+    public StandardModelClassLibrary(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     private CompatibilityModelClass[] compatibilityModelClasses;
+    private VizController vizController;
 
     public CompatibilityModelClass[] createModelClassesCompatibility(AbstractEngine engine) {
         compatibilityModelClasses = new CompatibilityModelClass[4];
@@ -68,13 +74,13 @@ public class StandardModelClassLibrary implements ModelClassLibrary {
         //NODE
         compatibilityModelClasses[0] = new CompatibilityModelClass("NODE", true, true, true, false, false);
         compatibilityModelClasses[0].setClassId(classIds++);
-        CompatibilityNodeSphereModeler modeler3d = new CompatibilityNodeSphereModeler(engine);
-        CompatibilityNodeDiskModeler modeler2d = new CompatibilityNodeDiskModeler(engine);
-        CompatibilityNodeRectangleModeler modelerRect = new CompatibilityNodeRectangleModeler(engine);
+        CompatibilityNodeSphereModeler modeler3d = new CompatibilityNodeSphereModeler(engine, vizController);
+        CompatibilityNodeDiskModeler modeler2d = new CompatibilityNodeDiskModeler(engine, vizController);
+        CompatibilityNodeRectangleModeler modelerRect = new CompatibilityNodeRectangleModeler(engine, vizController);
         compatibilityModelClasses[0].addModeler(modeler3d);
         compatibilityModelClasses[0].addModeler(modeler2d);
         compatibilityModelClasses[0].addModeler(modelerRect);
-        if (VizController.getInstance().getVizModel().isUse3d()) {
+        if (vizController.getVizModel().isUse3d()) {
             compatibilityModelClasses[0].setCurrentModeler(modeler3d);
         } else {
             compatibilityModelClasses[0].setCurrentModeler(modeler2d);
@@ -83,14 +89,14 @@ public class StandardModelClassLibrary implements ModelClassLibrary {
         //EDGE
         compatibilityModelClasses[1] = new CompatibilityModelClass("EDGE", false, true, false, false, false);
         compatibilityModelClasses[1].setClassId(classIds++);
-        CompatibilityEdgeModeler edgeModeler = new CompatibilityEdgeModeler();
+        CompatibilityEdgeModeler edgeModeler = new CompatibilityEdgeModeler(vizController);
         compatibilityModelClasses[1].addModeler(edgeModeler);
         compatibilityModelClasses[1].setCurrentModeler(edgeModeler);
 
         //ARROW
         compatibilityModelClasses[2] = new CompatibilityModelClass("ARROW", true, false, false, false, false);
         compatibilityModelClasses[2].setClassId(classIds++);
-        CompatibilityArrowModeler arrowModeler = new CompatibilityArrowModeler(engine);
+        CompatibilityArrowModeler arrowModeler = new CompatibilityArrowModeler(engine, vizController);
         compatibilityModelClasses[2].addModeler(arrowModeler);
         compatibilityModelClasses[2].setCurrentModeler(arrowModeler);
 

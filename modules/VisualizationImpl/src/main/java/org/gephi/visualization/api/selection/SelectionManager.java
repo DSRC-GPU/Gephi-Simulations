@@ -68,14 +68,17 @@ public class SelectionManager implements VizArchitecture {
     private boolean selectionUpdateWhileDragging;
     //States
     private boolean blocked = false;
+    private VizController vizController;
+    
 
-    public SelectionManager() {
+    public SelectionManager(VizController vizController) {
         listeners = new ArrayList<ChangeListener>();
+        this.vizController = vizController;
     }
 
     public void initArchitecture() {
-        this.vizConfig = VizController.getInstance().getVizConfig();
-        this.engine = VizController.getInstance().getEngine();
+        this.vizConfig = vizController.getVizConfig();
+        this.engine = vizController.getEngine();
         mouseSelectionDiameter = vizConfig.getMouseSelectionDiameter();
         selectionUpdateWhileDragging = vizConfig.isMouseSelectionUpdateWhileDragging();
     }
@@ -192,7 +195,7 @@ public class SelectionManager implements VizArchitecture {
     public void centerOnNode(Node node) {
         Model model = node.getNodeData().getModel();
         if (model != null) {
-            VizController.getInstance().getGraphIO().centerOnCoordinate(model.getObj().x(), model.getObj().y(), model.getObj().z() + model.getObj().getSize() * 8);
+            vizController.getGraphIO().centerOnCoordinate(model.getObj().x(), model.getObj().y(), model.getObj().z() + model.getObj().getSize() * 8);
             engine.getScheduler().requireUpdateVisible();
         }
     }

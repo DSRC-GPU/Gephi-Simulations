@@ -60,8 +60,8 @@ public class GraphPanel extends GraphDrawableImpl {
     private GLJPanel gljPanel;
     private NumberFormat formatter;
 
-    public GraphPanel() {
-        super();
+    public GraphPanel(VizController vizController) {
+        super(vizController);
         formatter = NumberFormat.getNumberInstance();
         formatter.setMaximumFractionDigits(1);
 
@@ -101,7 +101,7 @@ public class GraphPanel extends GraphDrawableImpl {
             g.drawString(fpsRound, 10, 15);
         }
 
-        GraphLimits limits = VizController.getInstance().getLimits();
+        GraphLimits limits = vizController.getLimits();
         int[] xP = new int[4];
         xP[0] = limits.getMinXviewport();
         xP[1] = limits.getMinXviewport();

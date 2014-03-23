@@ -58,22 +58,26 @@ import org.gephi.lib.gleem.linalg.Vecf;
  * @author Mathieu Bastian
  */
 public class Cylinder implements SelectionArea {
-
+    
+ 
+    
     //Architecture
     private GraphIO graphIO;
     private GraphDrawable drawable;
     private SelectionManager selectionManager;
     private VizModel vizModel;
+    private VizController vizController;
 
     //Variables
     private static final float[] rectPoint = {1, 1};
     private float[] rectangle = new float[2];
 
-    public Cylinder() {
-        graphIO = VizController.getInstance().getGraphIO();
-        drawable = VizController.getInstance().getDrawable();
-        selectionManager = VizController.getInstance().getSelectionManager();
-        vizModel = VizController.getInstance().getVizModel();
+    public Cylinder(VizController vizController) {
+        this.vizController = vizController;
+        graphIO = vizController.getGraphIO();
+        drawable = vizController.getDrawable();
+        selectionManager = vizController.getSelectionManager();
+        vizModel = vizController.getVizModel();
     }
 
     public float[] getSelectionAreaRectancle() {

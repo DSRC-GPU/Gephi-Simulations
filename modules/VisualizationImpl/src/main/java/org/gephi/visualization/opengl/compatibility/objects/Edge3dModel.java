@@ -58,9 +58,9 @@ public class Edge3dModel extends Edge2dModel {
 
     private float[] cameraLocation;
 
-    public Edge3dModel() {
+    public Edge3dModel(VizController vizController) {
         super();
-        cameraLocation = VizController.getInstance().getDrawable().getCameraLocation();
+        cameraLocation = vizController.getDrawable().getCameraLocation();
     }
 
     @Override

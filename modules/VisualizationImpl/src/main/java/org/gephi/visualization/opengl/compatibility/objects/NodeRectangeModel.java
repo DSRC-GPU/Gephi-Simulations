@@ -60,8 +60,10 @@ public class NodeRectangeModel extends ModelImpl<NodeData> {
     public boolean border = true;
     protected float width = 20f;
     protected float height = 20f;
+    private VizController vizController;
 
-    public NodeRectangeModel() {
+    public NodeRectangeModel(VizController vizController) {
+        this.vizController = vizController;
         octants = new Octant[1];
     }
 
@@ -206,7 +208,7 @@ public class NodeRectangeModel extends ModelImpl<NodeData> {
 
     @Override
     public boolean selectionTest(Vecf distanceFromMouse, float selectionSize) {
-        GraphDrawable drawable = VizController.getInstance().getDrawable();
+        GraphDrawable drawable = vizController.getDrawable();
         if (distanceFromMouse.get(0) < width / 2 * Math.abs(drawable.getDraggingMarkerX()) && distanceFromMouse.get(1) < height / 2 * Math.abs(drawable.getDraggingMarkerY())) {
             return true;
         }

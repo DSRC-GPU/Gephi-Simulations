@@ -83,14 +83,17 @@ public class StandardGraphIO implements GraphIO, VizArchitecture {
     protected boolean draggingEnable = true;
     protected boolean dragging = false;
     protected boolean pressing = false;
+    
+    public StandardGraphIO(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     @Override
     public void initArchitecture() {
-        this.graphDrawable = VizController.getInstance().getDrawable();
-        this.engine = VizController.getInstance().getEngine();
-        this.vizEventManager = VizController.getInstance().getVizEventManager();
-        this.vizController = VizController.getInstance();
-        this.limits = VizController.getInstance().getLimits();
+        this.graphDrawable = vizController.getDrawable();
+        this.engine = vizController.getEngine();
+        this.vizEventManager = vizController.getVizEventManager();
+        this.limits = vizController.getLimits();
     }
 
     public void startMouseListening() {
@@ -307,7 +310,7 @@ public class StandardGraphIO implements GraphIO, VizArchitecture {
 
         boolean ctrl = (e.getModifiers() & InputEvent.CTRL_DOWN_MASK) != 0 || (e.getModifiers() & InputEvent.CTRL_MASK) != 0;
         if (ctrl) {
-            SelectionManager manager = VizController.getInstance().getSelectionManager();
+            SelectionManager manager = vizController.getSelectionManager();
             if (!manager.isRectangleSelection()) {
                 int s = manager.getMouseSelectionDiameter();
                 s += -e.getUnitsToScroll() * 2;

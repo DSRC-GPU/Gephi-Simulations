@@ -41,7 +41,9 @@ Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.visualization;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
@@ -83,16 +85,24 @@ import org.openide.util.lookup.ServiceProvider;
 public class VizController implements VisualizationController {
 
     //Singleton
+    public static List<VizController> instances;
     private static VizController instance;
-
-    public VizController() {
+    
+    public static void init() {  
+        System.err.println("WTFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+        instances = new ArrayList<VizController>();
+        VizController a = new VizController();
+        instances.add(a);
+        instance = a;
+        
+        VizController b = new VizController();
+        instances.add(b);
+        instance = b;  
     }
 
     public synchronized static VizController getInstance() {
-        if (instance == null) {
-            instance = (VizController) Lookup.getDefault().lookup(VisualizationController.class);
-            instance.initInstances();
-        }
+        if (instances == null)
+            init();
         return instance;
     }
     //Architecture
@@ -113,29 +123,28 @@ public class VizController implements VisualizationController {
     //Variable
     private VizModel currentModel;
 
-    public void initInstances() {
+    public VizController() {
         VizCommander commander = new VizCommander();
-
         vizConfig = new VizConfig();
-        graphIO = new StandardGraphIO();
-        engine = new CompatibilityEngine();
-        vizEventManager = new StandardVizEventManager();
-        scheduler = new CompatibilityScheduler();
-        modelClassLibrary = new StandardModelClassLibrary();
+        graphIO = new StandardGraphIO(this);
+        engine = new CompatibilityEngine(this);
+        vizEventManager = new StandardVizEventManager(this);
+        scheduler = new CompatibilityScheduler(this);
+        modelClassLibrary = new StandardModelClassLibrary(this);
         limits = new GraphLimits();
-        dataBridge = new DHNSDataBridge();
-        eventBridge = new DHNSEventBridge();
+        dataBridge = new DHNSDataBridge(this);
+        eventBridge = new DHNSEventBridge(this);
         //dataBridge = new TestDataBridge();
-        modeManager = new ModeManager();
-        textManager = new TextManager();
-        screenshotMaker = new ScreenshotMaker();
-        currentModel = new VizModel(true);
-        selectionManager = new SelectionManager();
+        modeManager = new ModeManager(this);
+        textManager = new TextManager(this);
+        screenshotMaker = new ScreenshotMaker(this);
+        currentModel = new VizModel(true, this);
+        selectionManager = new SelectionManager(this);
 
         if (vizConfig.isUseGLJPanel()) {
-            drawable = commander.createPanel();
+            drawable = commander.createPanel(this);
         } else {
-            drawable = commander.createCanvas();
+            drawable = commander.createCanvas(this);
         }
         drawable.initArchitecture();
         engine.initArchitecture();
@@ -152,21 +161,26 @@ public class VizController implements VisualizationController {
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         pc.addWorkspaceListener(new WorkspaceListener() {
 
+            @Override
             public void initialize(Workspace workspace) {
-                workspace.add(new VizModel());
+                workspace.add(new VizModel(VizController.this));
             }
 
+            @Override
             public void select(Workspace workspace) {
                 engine.reinit();
                 dataBridge.resetGraph();
             }
 
+            @Override
             public void unselect(Workspace workspace) {
             }
 
+            @Override
             public void close(Workspace workspace) {
             }
 
+            @Override
             public void disable() {
                 engine.reinit();
             }
@@ -181,11 +195,11 @@ public class VizController implements VisualizationController {
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
         VizModel model = null;
         if (pc.getCurrentWorkspace() == null) {
-            model = new VizModel(true);
+            model = new VizModel(true, this);
         } else {
             model = pc.getCurrentWorkspace().getLookup().lookup(VizModel.class);
             if (model == null) {
-                model = new VizModel();
+                model = new VizModel(this);
                 pc.getCurrentWorkspace().add(model);
             }
         }
@@ -195,7 +209,7 @@ public class VizController implements VisualizationController {
             currentModel.setListeners(null);
             currentModel.getTextModel().setListeners(null);
             currentModel = model;
-            VizController.getInstance().getModelClassLibrary().getNodeClass().setCurrentModeler(currentModel.getNodeModeler());
+            this.getModelClassLibrary().getNodeClass().setCurrentModeler(currentModel.getNodeModeler());
             currentModel.init();
         }
     }

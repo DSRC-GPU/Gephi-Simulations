@@ -70,11 +70,16 @@ public class DHNSEventBridge implements EventBridge, VizArchitecture {
     private HierarchicalGraph graph;
     private GraphIO graphIO;
     private GraphController graphController;
+    private VizController vizController;
+    
+    public DHNSEventBridge(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     @Override
     public void initArchitecture() {
-        this.engine = VizController.getInstance().getEngine();
-        this.graphIO = VizController.getInstance().getGraphIO();
+        this.engine = vizController.getEngine();
+        this.graphIO = vizController.getGraphIO();
         this.graphController = Lookup.getDefault().lookup(GraphController.class);
         initEvents();
     }

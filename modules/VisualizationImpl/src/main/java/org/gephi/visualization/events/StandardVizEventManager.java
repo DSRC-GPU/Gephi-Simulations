@@ -73,14 +73,16 @@ public class StandardVizEventManager implements VizEventManager {
     //
     private ThreadPoolExecutor pool;
     private VizEventTypeHandler[] handlers;
+    private VizController vizController;
 
-    public StandardVizEventManager() {
+    public StandardVizEventManager(VizController vizController) {
         pool = new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(10));
+        this.vizController = vizController;
     }
 
     public void initArchitecture() {
-        engine = VizController.getInstance().getEngine();
-        graphIO = VizController.getInstance().getGraphIO();
+        engine = vizController.getEngine();
+        graphIO = vizController.getGraphIO();
 
         //Set handlers
         ArrayList<VizEventTypeHandler> handlersList = new ArrayList<VizEventTypeHandler>();
@@ -113,7 +115,7 @@ public class StandardVizEventManager implements VizEventManager {
     public void mouseLeftClick() {
         //Node Left click
         VizEventTypeHandler nodeLeftHandler = handlers[VizEvent.Type.NODE_LEFT_CLICK.ordinal()];
-        if (nodeLeftHandler.hasListeners() && VizController.getInstance().getVizConfig().isSelectionEnable()) {
+        if (nodeLeftHandler.hasListeners() && vizController.getVizConfig().isSelectionEnable()) {
             //Check if some node are selected
             ModelImpl[] modelArray = engine.getSelectedObjects(AbstractEngine.CLASS_NODE);
             if (modelArray.length > 0) {
@@ -129,7 +131,7 @@ public class StandardVizEventManager implements VizEventManager {
         VizEventTypeHandler mouseLeftHandler = handlers[VizEvent.Type.MOUSE_LEFT_CLICK.ordinal()];
         if (mouseLeftHandler.hasListeners()) {
             ModelImpl[] modelArray = engine.getSelectedObjects(AbstractEngine.CLASS_NODE);
-            if (modelArray.length == 0 || !VizController.getInstance().getVizConfig().isSelectionEnable()) {
+            if (modelArray.length == 0 || !vizController.getVizConfig().isSelectionEnable()) {
                 float[] mousePositionViewport = graphIO.getMousePosition();
                 float[] mousePosition3d = graphIO.getMousePosition3d();
                 float[] mousePos = new float[]{mousePositionViewport[0], mousePositionViewport[1], mousePosition3d[0], mousePosition3d[1]};

@@ -108,10 +108,12 @@ public class ScreenshotMaker implements VizArchitecture {
     private File file;
     //State
     private boolean takeTicket = false;
+    private VizController vizController;
 
-    public ScreenshotMaker() {
+    public ScreenshotMaker(VizController vizController) {
 
-        //Preferences
+        //Preferences;
+        this.vizController = vizController;
         String lastPathDefault = NbPreferences.forModule(ScreenshotMaker.class).get(LAST_PATH_DEFAULT, null);
         defaultDirectory = NbPreferences.forModule(ScreenshotMaker.class).get(LAST_PATH, lastPathDefault);
         antiAliasing = NbPreferences.forModule(ScreenshotMaker.class).getInt(ANTIALIASING_DEFAULT, antiAliasing);
@@ -123,10 +125,10 @@ public class ScreenshotMaker implements VizArchitecture {
     }
 
     public void initArchitecture() {
-        drawable = VizController.getInstance().getDrawable();
-        engine = VizController.getInstance().getEngine();
-        textManager = VizController.getInstance().getTextManager();
-        vizConfig = VizController.getInstance().getVizConfig();
+        drawable = vizController.getDrawable();
+        engine = vizController.getEngine();
+        textManager = vizController.getTextManager();
+        vizConfig = vizController.getVizConfig();
     }
 
     public void takeScreenshot() {

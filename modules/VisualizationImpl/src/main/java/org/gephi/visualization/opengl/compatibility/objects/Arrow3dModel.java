@@ -60,9 +60,9 @@ public class Arrow3dModel extends Arrow2dModel {
 
     protected float[] cameraLocation;
 
-    public Arrow3dModel(EdgeData edge) {
+    public Arrow3dModel(EdgeData edge, VizController vizController) {
         super(edge);
-        cameraLocation = VizController.getInstance().getDrawable().getCameraLocation();
+        cameraLocation = vizController.getDrawable().getCameraLocation();
     }
 
     @Override

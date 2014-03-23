@@ -52,6 +52,7 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.glu.GLU;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
+import org.gephi.visualization.VizController;
 
 /**
  *
@@ -63,8 +64,8 @@ public class GraphCanvas extends GraphDrawableImpl {
     private GLUT glut = new GLUT();
     private NumberFormat formatter;
 
-    public GraphCanvas() {
-        super();
+    public GraphCanvas(VizController vizController) {
+        super(vizController);
         formatter = NumberFormat.getNumberInstance();
         formatter.setMaximumFractionDigits(1);
         glCanvas = new GLCanvas(getCaps());

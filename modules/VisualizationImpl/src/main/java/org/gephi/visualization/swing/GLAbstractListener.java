@@ -82,6 +82,10 @@ public abstract class GLAbstractListener implements GLEventListener {
     protected GraphicalConfiguration graphicalConfiguration;
     protected Lighting lighting = new Lighting();
     protected ScreenshotMaker screenshotMaker;
+    
+    public GLAbstractListener(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     protected void initDrawable(GLAutoDrawable drawable) {
         this.drawable = drawable;

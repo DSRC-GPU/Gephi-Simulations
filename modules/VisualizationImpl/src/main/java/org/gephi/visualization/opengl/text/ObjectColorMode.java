@@ -57,8 +57,8 @@ public class ObjectColorMode implements ColorMode {
 
     private VizConfig vizConfig;
 
-    public ObjectColorMode() {
-        this.vizConfig = VizController.getInstance().getVizConfig();
+    public ObjectColorMode(VizController vizController) {
+        this.vizConfig = vizController.getVizConfig();
     }
 
     public void defaultEdgeColor(Renderer renderer) {

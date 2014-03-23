@@ -94,16 +94,19 @@ public class VizModel {
     //Listener
     protected List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
     private boolean defaultModel = false;
+     private VizController vizController;
 
-    public VizModel() {
+    public VizModel(VizController vizController) {
+        this.vizController = vizController;
         defaultValues();
-        limits = VizController.getInstance().getLimits();
+        limits = vizController.getLimits();
     }
 
-    public VizModel(boolean defaultModel) {
+    public VizModel(boolean defaultModel, VizController vizController) {
+        this.vizController = vizController;
         this.defaultModel = defaultModel;
         defaultValues();
-        limits = VizController.getInstance().getLimits();
+        limits = vizController.getLimits();
     }
 
     public void init() {
@@ -133,10 +136,10 @@ public class VizModel {
     }
 
     private void defaultValues() {
-        config = VizController.getInstance().getVizConfig();
+        config = vizController.getVizConfig();
         cameraPosition = Arrays.copyOf(config.getDefaultCameraPosition(), 3);
         cameraTarget = Arrays.copyOf(config.getDefaultCameraTarget(), 3);
-        textModel = new TextModel();
+        textModel = new TextModel(vizController);
         use3d = config.isDefaultUse3d();
         lighting = use3d;
         culling = use3d;
@@ -368,7 +371,7 @@ public class VizModel {
     }
 
     public float getCameraDistance() {
-        GraphDrawable drawable = VizController.getInstance().getDrawable();
+        GraphDrawable drawable = vizController.getDrawable();
         return drawable.getCameraVector().length();
     }
 
@@ -471,7 +474,7 @@ public class VizModel {
         writer.writeStartElement("vizmodel");
 
         //Fast refreh
-        GraphDrawable drawable = VizController.getInstance().getDrawable();
+        GraphDrawable drawable = vizController.getDrawable();
         cameraPosition = Arrays.copyOf(drawable.getCameraLocation(), 3);
         cameraTarget = Arrays.copyOf(drawable.getCameraTarget(), 3);
 

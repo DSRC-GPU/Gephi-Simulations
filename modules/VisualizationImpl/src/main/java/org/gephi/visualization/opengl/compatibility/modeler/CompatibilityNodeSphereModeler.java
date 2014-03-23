@@ -72,9 +72,9 @@ public class CompatibilityNodeSphereModeler extends NodeSphereModeler implements
     private CompatibilityEngine engine;
     private VizConfig config;
 
-    public CompatibilityNodeSphereModeler(AbstractEngine engine) {
+    public CompatibilityNodeSphereModeler(AbstractEngine engine, VizController vizController) {
         this.engine = (CompatibilityEngine) engine;
-        this.config = VizController.getInstance().getVizConfig();
+        this.config = vizController.getVizConfig();
     }
 
     @Override

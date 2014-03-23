@@ -56,11 +56,17 @@ import org.gephi.visualization.api.initializer.CompatibilityModeler;
  * @author Mathieu Bastian
  */
 public class CompatibilityModelClass extends ModelClass {
+    
+   
+    public CompatibilityModelClass(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     //Initializer
     private CompatibilityModeler currentModeler;
     private List<CompatibilityModeler> modelers;
     private CompatibilityModeler newModeler;
+    private VizController vizController;
 
     public CompatibilityModelClass(String name, boolean lod, boolean selectable, boolean clickable, boolean glSelection, boolean aloneSelection) {
         super(name, lod, selectable, clickable, glSelection, aloneSelection);
@@ -93,7 +99,7 @@ public class CompatibilityModelClass extends ModelClass {
         }
         if (modeler != currentModeler) {
             newModeler = (CompatibilityModeler) modeler;
-            VizController.getInstance().getVizModel().setNodeModeler(newModeler.getClass().getSimpleName());
+            vizController.getVizModel().setNodeModeler(newModeler.getClass().getSimpleName());
         }
     }
 
@@ -119,7 +125,7 @@ public class CompatibilityModelClass extends ModelClass {
         if (newModeler != null) {
             currentModeler = newModeler;
             newModeler = null;
-            VizController.getInstance().getVizModel().setNodeModeler(currentModeler.getClass().getSimpleName());
+            vizController.getVizModel().setNodeModeler(currentModeler.getClass().getSimpleName());
         }
     }
 }

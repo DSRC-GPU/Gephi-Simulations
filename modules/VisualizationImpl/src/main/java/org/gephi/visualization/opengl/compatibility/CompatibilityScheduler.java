@@ -78,17 +78,22 @@ public class CompatibilityScheduler implements Scheduler, VizArchitecture {
     private GraphDrawableImpl graphDrawable;
     private CompatibilityEngine engine;
     private VizConfig vizConfig;
+    private VizController vizController;
     //Current GL
     private GL gl;
     private GLU glu;
     //Animator
     private SimpleFPSAnimator simpleFPSAnimator;
     private float fpsLimit = 30f;
+    
+    public CompatibilityScheduler(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     public void initArchitecture() {
-        this.graphDrawable = VizController.getInstance().getDrawable();
-        this.engine = (CompatibilityEngine) VizController.getInstance().getEngine();
-        this.vizConfig = VizController.getInstance().getVizConfig();
+        this.graphDrawable = vizController.getDrawable();
+        this.engine = (CompatibilityEngine) vizController.getEngine();
+        this.vizConfig = vizController.getVizConfig();
         initPools();
         init();
     }

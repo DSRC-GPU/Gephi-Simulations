@@ -60,9 +60,9 @@ public class SelfLoop3dModel extends SelfLoop2dModel {
     protected float[] cameraLocation;
     protected static Vec3f transVector = new Vec3f(1, 0, 0);
 
-    public SelfLoop3dModel() {
+    public SelfLoop3dModel(VizController vizController) {
         octants = new Octant[1];
-        cameraLocation = VizController.getInstance().getDrawable().getCameraLocation();
+        cameraLocation = vizController.getDrawable().getCameraLocation();
     }
 
     @Override

@@ -90,17 +90,18 @@ public class Octree implements VizArchitecture {
     protected ParamAVLIterator<ModelImpl> updatePositionIterator = new ParamAVLIterator<ModelImpl>();
     protected ParamAVLIterator<ModelImpl> cleanObjectsIterator = new ParamAVLIterator<ModelImpl>();
 
-    public Octree(int maxDepth, int size, int nbClasses) {
+    public Octree(int maxDepth, int size, int nbClasses, VizController vizController) {
+        this.vizController = vizController;
         this.maxDepth = maxDepth;
         this.classesCount = nbClasses;
         this.size = size;
     }
 
     public void initArchitecture() {
-        this.engine = VizController.getInstance().getEngine();
-        this.drawable = VizController.getInstance().getDrawable();
-        this.limits = VizController.getInstance().getLimits();
-        this.vizController = VizController.getInstance();
+        this.engine = vizController.getEngine();
+        this.drawable = vizController.getDrawable();
+        this.limits = vizController.getLimits();
+        this.vizController = vizController;
 
         leaves = new ParamAVLTree<Octant>(new AVLItemAccessor<Octant>() {
 

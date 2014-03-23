@@ -66,9 +66,9 @@ public class CompatibilityArrowModeler implements CompatibilityModeler<NodeData>
     private CompatibilityEngine engine;
     private VizController controller;
 
-    public CompatibilityArrowModeler(AbstractEngine engine) {
+    public CompatibilityArrowModeler(AbstractEngine engine, VizController controller) {
         this.engine = (CompatibilityEngine) engine;
-        this.controller = VizController.getInstance();
+        this.controller = controller;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class CompatibilityArrowModeler implements CompatibilityModeler<NodeData>
         EdgeData e = (EdgeData) n;
         Arrow2dModel arrow;
         if (controller.getVizModel().isUse3d()) {
-            arrow = new Arrow3dModel(e);
+            arrow = new Arrow3dModel(e, controller);
         } else {
             arrow = new Arrow2dModel(e);
         }

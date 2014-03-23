@@ -71,9 +71,9 @@ public class CompatibilityNodeDiskModeler implements CompatibilityNodeModeler {
     private CompatibilityEngine engine;
     protected VizConfig config;
 
-    public CompatibilityNodeDiskModeler(AbstractEngine engine) {
+    public CompatibilityNodeDiskModeler(AbstractEngine engine, VizController controller) {
         this.engine = (CompatibilityEngine) engine;
-        this.config = VizController.getInstance().getVizConfig();
+        this.config = controller.getVizConfig();
     }
 
     @Override

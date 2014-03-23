@@ -57,10 +57,15 @@ public class ModeManager implements VizArchitecture {
     private DisplayMode[] modes;
     private DisplayMode currentMode;
     private DisplayMode futureMode;
+    private VizController vizController;
     private boolean requireModeChange = false;
+    
+    public ModeManager(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     public void initArchitecture() {
-        this.engine = VizController.getInstance().getEngine();
+        this.engine = vizController.getEngine();
 
         //Init modes;
         modes = new DisplayMode[3];

@@ -57,6 +57,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class VizModelPersistenceProvider implements WorkspacePersistenceProvider {
 
     public void writeXML(XMLStreamWriter writer, Workspace workspace) {
+        /*
         VizModel model = workspace.getLookup().lookup(VizModel.class);
         if (model != null) {
             try {
@@ -65,9 +66,11 @@ public class VizModelPersistenceProvider implements WorkspacePersistenceProvider
                 throw new RuntimeException(ex);
             }
         }
+        */
     }
 
     public void readXML(XMLStreamReader reader, Workspace workspace) {
+        /*
         VizModel vizModel = workspace.getLookup().lookup(VizModel.class);
         if (vizModel == null) {
             vizModel = new VizModel();
@@ -78,7 +81,8 @@ public class VizModelPersistenceProvider implements WorkspacePersistenceProvider
             vizModel.readXML(reader, workspace);
         } catch (XMLStreamException ex) {
             throw new RuntimeException(ex);
-        }    
+        }
+        */
     }
 
     public String getIdentifier() {

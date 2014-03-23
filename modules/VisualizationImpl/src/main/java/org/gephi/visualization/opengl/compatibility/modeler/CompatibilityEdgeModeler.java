@@ -63,8 +63,8 @@ public class CompatibilityEdgeModeler implements CompatibilityModeler<EdgeData> 
 
     private VizController controller;
 
-    public CompatibilityEdgeModeler() {
-        this.controller = VizController.getInstance();
+    public CompatibilityEdgeModeler(VizController controller) {
+        this.controller = controller;
     }
 
     @Override
@@ -74,9 +74,9 @@ public class CompatibilityEdgeModeler implements CompatibilityModeler<EdgeData> 
         ModelImpl<EdgeData> edge;
         if (controller.getVizModel().isUse3d()) {
             if (e.getEdge().isSelfLoop()) {
-                edge = new SelfLoop3dModel();
+                edge = new SelfLoop3dModel(controller);
             } else {
-                edge = new Edge3dModel();
+                edge = new Edge3dModel(controller);
             }
         } else {
             if (e.getEdge().isSelfLoop()) {

@@ -85,24 +85,24 @@ public class CompatibilityEngine extends AbstractEngine {
     private ConcurrentLinkedQueue<ModelImpl>[] selectedObjects;
     private boolean anySelected = false;
 
-    public CompatibilityEngine() {
-        super();
+    public CompatibilityEngine(VizController vizController) {
+        super(vizController);
     }
 
     @Override
     public void initArchitecture() {
         super.initArchitecture();
-        scheduler = (CompatibilityScheduler) VizController.getInstance().getScheduler();
-        vizEventManager = VizController.getInstance().getVizEventManager();
+        scheduler = (CompatibilityScheduler) vizController.getScheduler();
+        vizEventManager = vizController.getVizEventManager();
 
         //Init
-        octree = new Octree(vizConfig.getOctreeDepth(), vizConfig.getOctreeWidth(), modelClasses.length);
+        octree = new Octree(vizConfig.getOctreeDepth(), vizConfig.getOctreeWidth(), modelClasses.length, vizController);
         octree.initArchitecture();
     }
 
     public void updateSelection(GL gl, GLU glu) {
         if (vizConfig.isSelectionEnable() && currentSelectionArea != null && currentSelectionArea.isEnabled()) {
-            VizModel vizModel = VizController.getInstance().getVizModel();
+            VizModel vizModel = vizController.getVizModel();
             float[] mp = Arrays.copyOf(graphIO.getMousePosition(), 2);
             float[] cent = currentSelectionArea.getSelectionAreaCenter();
             if (cent != null) {
@@ -244,7 +244,7 @@ public class CompatibilityEngine extends AbstractEngine {
         }
 
         if (reinit) {
-            VizController.getInstance().refreshWorkspace();
+            vizController.refreshWorkspace();
             dataBridge.reset();
             graphDrawable.initConfig(gl);
             graphDrawable.setCameraLocation(vizController.getVizModel().getCameraPosition());
@@ -269,7 +269,7 @@ public class CompatibilityEngine extends AbstractEngine {
         CompatibilityModelClass arrowClass = modelClasses[AbstractEngine.CLASS_ARROW];
         CompatibilityModelClass potatoClass = modelClasses[AbstractEngine.CLASS_POTATO];
 
-        VizModel vizModel = VizController.getInstance().getVizModel();
+        VizModel vizModel = vizController.getVizModel();
 
         //Potato
         if (potatoClass.isEnabled()) {
@@ -897,11 +897,11 @@ public class CompatibilityEngine extends AbstractEngine {
             rectangleSelection = false;
             currentSelectionArea = null;
         } else if (vizConfig.isRectangleSelection()) {
-            currentSelectionArea = new Rectangle();
+            currentSelectionArea = new Rectangle(vizController);
             rectangleSelection = true;
             customSelection = false;
         } else {
-            currentSelectionArea = new Cylinder();
+            currentSelectionArea = new Cylinder(vizController);
             rectangleSelection = false;
             customSelection = false;
         }

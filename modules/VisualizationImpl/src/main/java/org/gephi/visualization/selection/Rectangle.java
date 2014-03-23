@@ -70,10 +70,12 @@ public class Rectangle implements SelectionArea {
     private float[] color;
     private boolean blocking = true;
     private boolean ctrl = false;
+    private VizController vizController;
 
-    public Rectangle() {
-        drawable = VizController.getInstance().getDrawable();
-        config = VizController.getInstance().getVizConfig();
+    public Rectangle(VizController vizController) {
+        this.vizController = vizController;
+        drawable = vizController.getDrawable();
+        config = vizController.getVizConfig();
         color = config.getRectangleSelectionColor().getRGBComponents(null);
     }
 

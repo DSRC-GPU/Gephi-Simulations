@@ -55,9 +55,14 @@ public class FixedSizeMode implements SizeMode {
 
     //private static float FACTOR_3D = 800f;
     private GraphDrawable drawable;
+    private VizController vizController;
+    
+   public FixedSizeMode(VizController vizController) {
+       this.vizController = vizController;
+   }
 
     public void init() {
-        drawable = VizController.getInstance().getDrawable();
+        drawable = vizController.getDrawable();
     }
 
     public void setSizeFactor2d(float sizeFactor, TextDataImpl text, ModelImpl model) {

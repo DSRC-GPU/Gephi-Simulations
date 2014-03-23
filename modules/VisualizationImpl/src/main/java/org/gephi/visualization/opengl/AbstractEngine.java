@@ -105,17 +105,21 @@ public abstract class AbstractEngine implements Engine, VizArchitecture {
     protected float lightenAnimationDelta = 0f;
     //Octree
     protected Octree octree;
+    
+    public AbstractEngine(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     public void initArchitecture() {
-        this.graphDrawable = VizController.getInstance().getDrawable();
-        this.graphIO = VizController.getInstance().getGraphIO();
-        this.modelClassLibrary = VizController.getInstance().getModelClassLibrary();
-        this.dataBridge = VizController.getInstance().getDataBridge();
-        this.eventBridge = VizController.getInstance().getEventBridge();
-        this.vizController = VizController.getInstance();
-        this.vizConfig = VizController.getInstance().getVizConfig();
-        this.modeManager = VizController.getInstance().getModeManager();
-        this.textManager = VizController.getInstance().getTextManager();
+        this.graphDrawable = vizController.getDrawable();
+        this.graphIO = vizController.getGraphIO();
+        this.modelClassLibrary = vizController.getModelClassLibrary();
+        this.dataBridge = vizController.getDataBridge();
+        this.eventBridge = vizController.getEventBridge();
+        this.vizController = vizController;
+        this.vizConfig = vizController.getVizConfig();
+        this.modeManager = vizController.getModeManager();
+        this.textManager = vizController.getTextManager();
         initObject3dClass();
         initSelection();
 

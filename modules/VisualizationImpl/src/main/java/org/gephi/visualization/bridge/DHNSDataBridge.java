@@ -85,6 +85,7 @@ public class DHNSDataBridge implements DataBridge, VizArchitecture, DynamicModel
     protected GraphController controller;
     protected HierarchicalGraph graph;
     private VizConfig vizConfig;
+    private VizController vizController;
     protected ModeManager modeManager;
     protected GraphLimits limits;
     protected DynamicController dynamicController;
@@ -97,14 +98,18 @@ public class DHNSDataBridge implements DataBridge, VizArchitecture, DynamicModel
     protected GraphModel gm;
     //Attributes
     private int cacheMarker = 0;
+    
+    public DHNSDataBridge(VizController vizController) {
+        this.vizController = vizController;
+    }
 
     @Override
     public void initArchitecture() {
-        this.engine = VizController.getInstance().getEngine();
+        this.engine = vizController.getEngine();
         controller = Lookup.getDefault().lookup(GraphController.class);
-        this.vizConfig = VizController.getInstance().getVizConfig();
-        this.modeManager = VizController.getInstance().getModeManager();
-        this.limits = VizController.getInstance().getLimits();
+        this.vizConfig = vizController.getVizConfig();
+        this.modeManager = vizController.getModeManager();
+        this.limits = vizController.getLimits();
         this.dynamicController = Lookup.getDefault().lookup(DynamicController.class);
     }
 

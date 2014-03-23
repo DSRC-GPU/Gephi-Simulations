@@ -79,13 +79,15 @@ public class TextModel {
     protected List<ChangeListener> listeners = new ArrayList<ChangeListener>();
     protected AttributeColumn[] nodeTextColumns = new AttributeColumn[0];
     protected AttributeColumn[] edgeTextColumns = new AttributeColumn[0];
+    protected VizController vizController;
 
-    public TextModel() {
+    public TextModel(VizController vizController) {
+        this.vizController = vizController;
         defaultValues();
     }
 
     private void defaultValues() {
-        VizConfig vizConfig = VizController.getInstance().getVizConfig();
+        VizConfig vizConfig = vizController.getVizConfig();
         showNodeLabels = vizConfig.isDefaultShowNodeLabels();
         showEdgeLabels = vizConfig.isDefaultShowEdgeLabels();
         nodeFont = vizConfig.getDefaultNodeLabelFont();
@@ -93,8 +95,8 @@ public class TextModel {
         nodeColor = vizConfig.getDefaultNodeLabelColor().getRGBComponents(null);
         edgeColor = vizConfig.getDefaultEdgeLabelColor().getRGBComponents(null);
         selectedOnly = vizConfig.isDefaultShowLabelOnSelectedOnly();
-        colorMode = VizController.getInstance().getTextManager().getColorModes()[0];
-        sizeMode = VizController.getInstance().getTextManager().getSizeModes()[1];
+        colorMode = vizController.getTextManager().getColorModes()[0];
+        sizeMode = vizController.getTextManager().getSizeModes()[1];
     }
 
     //Event
@@ -288,18 +290,18 @@ public class TextModel {
                     } else if ("colormode".equalsIgnoreCase(name)) {
                         String colorModeClass = reader.getAttributeValue(null, "class");
                         if (colorModeClass.equals("UniqueColorMode")) {
-                            colorMode = VizController.getInstance().getTextManager().getColorModes()[0];
+                            colorMode = vizController.getTextManager().getColorModes()[0];
                         } else if (colorModeClass.equals("ObjectColorMode")) {
-                            colorMode = VizController.getInstance().getTextManager().getColorModes()[1];
+                            colorMode = vizController.getTextManager().getColorModes()[1];
                         }
                     } else if ("sizemode".equalsIgnoreCase(name)) {
                         String sizeModeClass = reader.getAttributeValue(null, "class");
                         if (sizeModeClass.equals("FixedSizeMode")) {
-                            sizeMode = VizController.getInstance().getTextManager().getSizeModes()[0];
+                            sizeMode = vizController.getTextManager().getSizeModes()[0];
                         } else if (sizeModeClass.equals("ProportionalSizeMode")) {
-                            sizeMode = VizController.getInstance().getTextManager().getSizeModes()[2];
+                            sizeMode = vizController.getTextManager().getSizeModes()[2];
                         } else if (sizeModeClass.equals("ScaledSizeMode")) {
-                            sizeMode = VizController.getInstance().getTextManager().getSizeModes()[1];
+                            sizeMode = vizController.getTextManager().getSizeModes()[1];
                         }
                     } else if ("nodecolumns".equalsIgnoreCase(name)) {
                         nodeColumn = true;

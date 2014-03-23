@@ -73,16 +73,17 @@ public class GraphDrawableImpl extends GLAbstractListener implements VizArchitec
     protected double[] draggingMarker = new double[2];//The drag mesure for a moving of 1 to the viewport
     protected Vec3f cameraVector = new Vec3f();
     protected MouseAdapter graphMouseAdapter;
+    protected VizController vizController;
 
-    public GraphDrawableImpl() {
-        super();
-        this.vizController = VizController.getInstance();
+    public GraphDrawableImpl(VizController vizController) {
+        super(vizController);
+        this.vizController = vizController;
     }
 
     public void initArchitecture() {
-        this.engine = VizController.getInstance().getEngine();
-        this.scheduler = VizController.getInstance().getScheduler();
-        this.screenshotMaker = VizController.getInstance().getScreenshotMaker();
+        this.engine = vizController.getEngine();
+        this.scheduler = vizController.getScheduler();
+        this.screenshotMaker = vizController.getScreenshotMaker();
 
         cameraLocation = vizController.getVizConfig().getDefaultCameraPosition();
         cameraTarget = vizController.getVizConfig().getDefaultCameraTarget();

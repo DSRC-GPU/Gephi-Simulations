@@ -96,27 +96,29 @@ public class TextManager implements VizArchitecture {
     private boolean mipmap;
     private boolean fractionalMetrics;
     private boolean antialised;
+    private VizController vizController;
 
-    public TextManager() {
+    public TextManager(VizController vizController) {
         textUtils = new TextUtils(this);
         builder = new TextDataBuilderImpl();
+        this.vizController = vizController;
 
         //SizeMode init
         sizeModes = new SizeMode[3];
-        sizeModes[0] = new FixedSizeMode();
+        sizeModes[0] = new FixedSizeMode(vizController);
         sizeModes[1] = new ScaledSizeMode();
         sizeModes[2] = new ProportionalSizeMode();
 
         //ColorMode init
         colorModes = new ColorMode[2];
-        colorModes[0] = new UniqueColorMode();
-        colorModes[1] = new ObjectColorMode();
+        colorModes[0] = new UniqueColorMode(vizController);
+        colorModes[1] = new ObjectColorMode(vizController);
     }
 
     public void initArchitecture() {
-        model = VizController.getInstance().getVizModel().getTextModel();
-        vizConfig = VizController.getInstance().getVizConfig();
-        drawable = VizController.getInstance().getDrawable();
+        model = vizController.getVizModel().getTextModel();
+        vizConfig = vizController.getVizConfig();
+        drawable = vizController.getDrawable();
         initRenderer();
 
         //Init sizemodes
@@ -140,11 +142,11 @@ public class TextManager implements VizArchitecture {
         });
 
         //Model change
-        VizController.getInstance().getVizModel().addPropertyChangeListener(new PropertyChangeListener() {
+        vizController.getVizModel().addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals("init")) {
-                    TextManager.this.model = VizController.getInstance().getVizModel().getTextModel();
+                    TextManager.this.model = vizController.getVizModel().getTextModel();
 
                     //Initialize columns if needed
                     if (model.getNodeTextColumns() == null || model.getNodeTextColumns().length == 0) {

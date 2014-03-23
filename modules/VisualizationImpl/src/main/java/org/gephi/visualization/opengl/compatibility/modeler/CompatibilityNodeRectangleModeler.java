@@ -63,15 +63,17 @@ public class CompatibilityNodeRectangleModeler implements CompatibilityNodeModel
 
     private CompatibilityEngine engine;
     protected VizConfig config;
+    private VizController vizController;
 
-    public CompatibilityNodeRectangleModeler(AbstractEngine engine) {
+    public CompatibilityNodeRectangleModeler(AbstractEngine engine, VizController vizController) {
+        this.vizController = vizController;
         this.engine = (CompatibilityEngine) engine;
-        this.config = VizController.getInstance().getVizConfig();
+        this.config = vizController.getVizConfig();
     }
 
     @Override
     public ModelImpl initModel(Renderable n) {
-        NodeRectangeModel obj = new NodeRectangeModel();
+        NodeRectangeModel obj = new NodeRectangeModel(vizController);
         obj.setObj((NodeData) n);
         obj.setSelected(false);
         obj.setDragDistanceFromMouse(new float[2]);

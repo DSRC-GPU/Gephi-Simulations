@@ -41,6 +41,7 @@ Portions Copyrighted 2011 Gephi Consortium.
 */
 package org.gephi.visualization.config;
 
+import org.gephi.visualization.VizController;
 import org.gephi.visualization.swing.GraphCanvas;
 import org.gephi.visualization.swing.GraphPanel;
 
@@ -50,13 +51,13 @@ import org.gephi.visualization.swing.GraphPanel;
  */
 public class VizCommander {
 
-    public GraphCanvas createCanvas() {
-        GraphCanvas canvas = new GraphCanvas();
+    public GraphCanvas createCanvas(VizController v) {
+        GraphCanvas canvas = new GraphCanvas(v);
         return canvas;
     }
 
-    public GraphPanel createPanel() {
-        GraphPanel panel = new GraphPanel();
+    public GraphPanel createPanel(VizController v) {
+        GraphPanel panel = new GraphPanel(v);
         return panel;
     }
 }

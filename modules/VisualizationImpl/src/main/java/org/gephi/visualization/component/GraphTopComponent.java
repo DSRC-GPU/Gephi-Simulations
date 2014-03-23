@@ -85,24 +85,22 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 preferredID = "GraphTopComponent")
 public class GraphTopComponent extends TopComponent implements AWTEventListener {
     
-    private AbstractEngine engine;
     private VizBarController vizBarController;
-    private final DHNSEventBridge eventBridge;
+    private org.gephi.visualization.component.CollapsePanel collapsePanel;
+    //private final JPanel centerPanel;
     private Map<Integer, ContextMenuItemManipulator> keyActionMappings = new HashMap<Integer, ContextMenuItemManipulator>();
 
     public GraphTopComponent() {
+        VizController.init();
         initComponents();
+        System.out.println("before here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         setName(NbBundle.getMessage(GraphTopComponent.class, "CTL_GraphTopComponent"));
-//        setToolTipText(NbBundle.getMessage(GraphTopComponent.class, "HINT_GraphTopComponent"));
-
-        engine = VizController.getInstance().getEngine();
-        eventBridge = (DHNSEventBridge) VizController.getInstance().getEventBridge();
+        //setToolTipText(NbBundle.getMessage(GraphTopComponent.class, "HINT_GraphTopComponent"));
 
         //Init
-        initCollapsePanel();
-        initToolPanels();
-        final GraphDrawableImpl drawable = VizController.getInstance().getDrawable();
+        //initCollapsePanel();
+        //initToolPanels();
 
         //Request component activation and therefore initialize JOGL component
         WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
@@ -113,18 +111,21 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
 
                     public void run() {
                         requestActive();
-                        add(drawable.getGraphComponent(), BorderLayout.CENTER);
-                        remove(waitingLabel);
+                         System.err.println("before here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        for (VizController v: VizController.instances) {
+                            System.err.println("here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                            GraphDrawableImpl d = v.getDrawable();
+                            add(d.getGraphComponent());
+                        }
                     }
                 });
             }
         });
         initKeyEventContextMenuActionMappings();
-        //remove(waitingLabel);
-        //add(drawable.getGraphComponent(), BorderLayout.CENTER);
     }
 
     private void initCollapsePanel() {
+        collapsePanel = new org.gephi.visualization.component.CollapsePanel();
         vizBarController = new VizBarController();
         if (VizController.getInstance().getVizConfig().isShowVizVar()) {
             collapsePanel.init(vizBarController.getToolbar(), vizBarController.getExtendedBar(), false);
@@ -132,6 +133,7 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
             collapsePanel.setVisible(false);
         }
     }
+    
     private SelectionToolbar selectionToolbar;
     private ActionsToolbar actionsToolbar;
     private JComponent toolbar;
@@ -243,7 +245,7 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
      */
     public void eventDispatched(AWTEvent event) {
         KeyEvent evt = (KeyEvent) event;
-
+        DHNSEventBridge eventBridge = (DHNSEventBridge) VizController.getInstance().getEventBridge();
         if (evt.getID() == KeyEvent.KEY_RELEASED && (evt.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == KeyEvent.CTRL_DOWN_MASK) {
             final ContextMenuItemManipulator item = keyActionMappings.get(evt.getKeyCode());
             if (item != null) {
@@ -264,32 +266,27 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        waitingLabel = new javax.swing.JLabel();
-        collapsePanel = new org.gephi.visualization.component.CollapsePanel();
-
-        setLayout(new java.awt.BorderLayout());
-
-        waitingLabel.setBackground(new java.awt.Color(255, 255, 255));
-        org.openide.awt.Mnemonics.setLocalizedText(waitingLabel, org.openide.util.NbBundle.getMessage(GraphTopComponent.class, "GraphTopComponent.waitingLabel.text")); // NOI18N
-        waitingLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        add(waitingLabel, java.awt.BorderLayout.CENTER);
-        add(collapsePanel, java.awt.BorderLayout.PAGE_END);
+        setLayout(new java.awt.GridLayout());
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.gephi.visualization.component.CollapsePanel collapsePanel;
-    private javax.swing.JLabel waitingLabel;
     // End of variables declaration//GEN-END:variables
 
     @Override
     protected void componentShowing() {
         super.componentShowing();
-        engine.startDisplay();
+        for (VizController v: VizController.instances) {
+            AbstractEngine engine = v.getEngine();
+            engine.startDisplay();
+        }
     }
 
     @Override
     protected void componentHidden() {
         super.componentHidden();
-        engine.stopDisplay();
+        for (VizController v: VizController.instances) {
+            AbstractEngine engine = v.getEngine();
+            engine.stopDisplay();
+        }
     }
 
     @Override
@@ -308,7 +305,10 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
 
     @Override
     public void componentClosed() {
-        engine.stopDisplay();
+        for (VizController v: VizController.instances) {
+            AbstractEngine engine = v.getEngine();
+            engine.stopDisplay();
+        }
     }
 
     void writeProperties(java.util.Properties p) {
