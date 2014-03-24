@@ -68,6 +68,7 @@ import org.openide.windows.TopComponent;
  * @author Mathieu Bastian
  * @author Patick J. McSweeney
  */
+/*
 @ConvertAsProperties(dtd = "-//org.gephi.desktop.statistics//Statistics//EN",
 autostore = false)
 @TopComponent.Description(preferredID = "StatisticsTopComponent",
@@ -78,6 +79,7 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @ActionReference(path = "Menu/Window", position = 1200)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_StatisticsTopComponent",
 preferredID = "StatisticsTopComponent")
+*/
 public final class StatisticsTopComponent extends TopComponent implements ChangeListener {
 
     //Model

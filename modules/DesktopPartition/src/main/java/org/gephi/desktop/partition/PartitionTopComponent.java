@@ -53,6 +53,7 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+/*
 @ConvertAsProperties(dtd = "-//org.gephi.desktop.partition//Layout//EN",
 autostore = false)
 @TopComponent.Description(preferredID = "PartitionTopComponent",
@@ -63,6 +64,7 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @ActionReference(path = "Menu/Window", position = 800)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_PartitionTopComponent",
 preferredID = "PartitionTopComponent")
+*/
 public class PartitionTopComponent extends TopComponent {
 
     public PartitionTopComponent() {
