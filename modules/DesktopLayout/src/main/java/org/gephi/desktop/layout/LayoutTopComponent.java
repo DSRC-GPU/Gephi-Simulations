@@ -55,6 +55,7 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+/*
 @ConvertAsProperties(dtd = "-//org.gephi.desktop.layout//Layout//EN",
 autostore = false)
 @TopComponent.Description(preferredID = "LayoutTopComponent",
@@ -65,6 +66,7 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @ActionReference(path = "Menu/Window", position = 700)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_LayoutTopComponent",
 preferredID = "LayoutTopComponent")
+*/
 public final class LayoutTopComponent extends TopComponent {
 
     private LayoutPanel layoutPanel;
