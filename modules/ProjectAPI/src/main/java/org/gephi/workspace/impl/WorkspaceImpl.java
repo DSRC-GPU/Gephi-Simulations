@@ -41,10 +41,6 @@ Portions Copyrighted 2011 Gephi Consortium.
 */
 package org.gephi.workspace.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import org.gephi.project.api.Project;
 import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;

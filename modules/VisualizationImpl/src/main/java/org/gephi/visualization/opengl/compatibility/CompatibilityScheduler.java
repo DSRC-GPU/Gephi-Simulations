@@ -205,6 +205,7 @@ public class CompatibilityScheduler implements Scheduler, VizArchitecture {
 
     @Override
     public synchronized void start() {
+        System.err.println("Starting SimpleFPSAnimator");
         simpleFPSAnimator = new SimpleFPSAnimator(this, graphDrawable, fpsLimit);
         simpleFPSAnimator.start();
     }

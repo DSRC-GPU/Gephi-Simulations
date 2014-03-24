@@ -54,6 +54,8 @@ import org.gephi.io.importer.api.EdgeDraftGetter;
 import org.gephi.io.importer.api.NodeDraftGetter;
 import org.gephi.io.processor.spi.Processor;
 import org.gephi.project.api.ProjectController;
+import org.gephi.visualization.VizController;
+import org.gephi.visualization.api.VisualizationController;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -161,6 +163,8 @@ public class DefaultProcessor extends AbstractProcessor implements Processor {
         }
 
         System.out.println("# Nodes loaded: " + nodeCount + "\n# Edges loaded: " + edgeCount);
+        VizController vc = (VizController) Lookup.getDefault().lookup(VisualizationController.class);
+        vc.importFinised(workspace);
         workspace = null;
     }
 }

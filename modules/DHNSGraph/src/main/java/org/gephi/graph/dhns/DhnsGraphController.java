@@ -41,21 +41,14 @@ Portions Copyrighted 2011 Gephi Consortium.
  */
 package org.gephi.graph.dhns;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.dhns.core.Dhns;
 import org.gephi.graph.dhns.core.IDGen;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
-import org.gephi.project.spi.WorkspaceDuplicateProvider;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
-import org.openide.util.lookup.ServiceProviders;
 
 /**
  * Singleton which manages the graph access.

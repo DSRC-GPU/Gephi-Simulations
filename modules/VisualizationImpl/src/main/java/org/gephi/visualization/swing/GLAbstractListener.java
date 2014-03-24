@@ -65,7 +65,7 @@ public abstract class GLAbstractListener implements GLEventListener {
 
     protected GLAutoDrawable drawable;
     protected VizController vizController;
-    public static final GLU glu = new GLU();
+    public final GLU glu = new GLU();
     private static boolean DEBUG = true;
     private long startTime = 0;
     protected float fps;
@@ -236,7 +236,7 @@ public abstract class GLAbstractListener implements GLEventListener {
     public void display(GLAutoDrawable drawable) {
 
         //Screenshot
-        screenshotMaker.openglSignal(drawable);
+        //screenshotMaker.openglSignal(drawable);
 
         //FPS
         if (startTime == 0) {

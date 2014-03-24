@@ -187,7 +187,7 @@ public class ScreenshotMaker implements VizArchitecture {
         //Init
         drawable.initConfig(gl);
         vizConfig.setDisableLOD(true);
-        engine.initScreenshot(gl, GLAbstractListener.glu);
+        //engine.initScreenshot(gl, GLAbstractListener.glu);
 
         //Textrender - swap to 3D
         textManager.setRenderer3d(true);

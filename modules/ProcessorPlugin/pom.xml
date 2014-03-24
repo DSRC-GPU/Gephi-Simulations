@@ -44,6 +44,18 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>visualization</artifactId>
+            <version>0.8.2</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>visualization-api</artifactId>
+            <version>0.8.2</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

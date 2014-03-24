@@ -93,7 +93,6 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
     public GraphTopComponent() {
         VizController.init();
         initComponents();
-        System.out.println("before here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         setName(NbBundle.getMessage(GraphTopComponent.class, "CTL_GraphTopComponent"));
         //setToolTipText(NbBundle.getMessage(GraphTopComponent.class, "HINT_GraphTopComponent"));
@@ -141,6 +140,7 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
     private AddonsBar addonsBar;
 
     private void initToolPanels() {
+        /*
         final ToolController tc = Lookup.getDefault().lookup(ToolController.class);
         if (tc != null) {
             if (VizController.getInstance().getVizConfig().isToolbar()) {
@@ -178,44 +178,67 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
                 add(northBar, BorderLayout.NORTH);
             }
         }
+        */
 
         //Workspace events
-        ProjectController projectController = Lookup.getDefault().lookup(ProjectController.class);
-        projectController.addWorkspaceListener(new WorkspaceListener() {
-
-            public void initialize(Workspace workspace) {
+        final ProjectController projectController = Lookup.getDefault().lookup(ProjectController.class);
+       
+        Workspace ws = projectController.getCurrentWorkspace();
+        if (ws != null) {
+            for (VizController v: VizController.instances) {
+                Workspace d = projectController.duplicateWorkspace(ws);
+                v.setWorkspace(d);
             }
+            /*
+            toolbar.setEnabled(true);
+            propertiesBar.setEnabled(true);
+            actionsToolbar.setEnabled(true);
+            selectionToolbar.setEnabled(true);
+            addonsBar.setEnabled(true);
+            */
+        } else {
+            projectController.addWorkspaceListener(new WorkspaceListener() {
 
-            public void select(Workspace workspace) {
-                toolbar.setEnabled(true);
-                propertiesBar.setEnabled(true);
-                actionsToolbar.setEnabled(true);
-                selectionToolbar.setEnabled(true);
-                addonsBar.setEnabled(true);
-            }
+                @Override
+                public void initialize(Workspace workspace) {
+                    projectController.removeWorkspaceListener(this);
+                    System.err.println("Init workspace");
+                    VizController.getInstance().setWorkspace(workspace);
+                }               
+                
 
-            public void unselect(Workspace workspace) {
-            }
+                @Override
+                public void select(Workspace workspace) {
+                    /*
+                    toolbar.setEnabled(true);
+                    propertiesBar.setEnabled(true);
+                    actionsToolbar.setEnabled(true);
+                    selectionToolbar.setEnabled(true);
+                    addonsBar.setEnabled(true);
+                    */
+                }
 
-            public void close(Workspace workspace) {
-            }
+                @Override
+                public void unselect(Workspace workspace) {
+                }
 
-            public void disable() {
-                toolbar.setEnabled(false);
-                tc.select(null);//Unselect any selected tool
-                propertiesBar.setEnabled(false);
-                actionsToolbar.setEnabled(false);
-                selectionToolbar.setEnabled(false);
-                addonsBar.setEnabled(false);
-            }
-        });
+                @Override
+                public void close(Workspace workspace) {
+                }
 
-        boolean hasWorkspace = projectController.getCurrentWorkspace() != null;
-        toolbar.setEnabled(hasWorkspace);
-        propertiesBar.setEnabled(hasWorkspace);
-        actionsToolbar.setEnabled(hasWorkspace);
-        selectionToolbar.setEnabled(hasWorkspace);
-        addonsBar.setEnabled(hasWorkspace);
+                @Override
+                public void disable() {
+                    /*
+                    toolbar.setEnabled(false);
+                    tc.select(null);//Unselect any selected tool
+                    propertiesBar.setEnabled(false);
+                    actionsToolbar.setEnabled(false);
+                    selectionToolbar.setEnabled(false);
+                    addonsBar.setEnabled(false);
+                    */
+                }
+            });
+        }     
     }
 
     private void initKeyEventContextMenuActionMappings() {
