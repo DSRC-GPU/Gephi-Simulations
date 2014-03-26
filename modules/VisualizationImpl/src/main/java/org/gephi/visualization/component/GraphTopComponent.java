@@ -42,7 +42,6 @@
 package org.gephi.visualization.component;
 
 import java.awt.AWTEvent;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.AWTEventListener;
@@ -52,16 +51,12 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import org.gephi.datalab.api.DataLaboratoryHelper;
 import org.gephi.datalab.spi.ContextMenuItemManipulator;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
-import org.gephi.tools.api.ToolController;
-import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.VizController;
-import org.gephi.visualization.apiimpl.PropertiesBarAddon;
 import org.gephi.visualization.bridge.DHNSEventBridge;
 import org.gephi.visualization.opengl.AbstractEngine;
 import org.gephi.visualization.spi.GraphContextMenuItem;
@@ -110,9 +105,7 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
 
                     public void run() {
                         requestActive();
-                         System.err.println("before here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                         for (VizController v: VizController.instances) {
-                            System.err.println("here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                             GraphDrawableImpl d = v.getDrawable();
                             add(d.getGraphComponent());
                         }

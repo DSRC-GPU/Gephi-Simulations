@@ -106,6 +106,7 @@ public class VizController implements VisualizationController {
         return instance;
     }
     //Architecture
+    public SimModel sm;
     private Workspace ws;
     private GraphDrawableImpl drawable;
     private AbstractEngine engine;
@@ -158,45 +159,17 @@ public class VizController implements VisualizationController {
         screenshotMaker.initArchitecture();
         vizEventManager.initArchitecture();
         selectionManager.initArchitecture();
-
-        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-        /*
-         pc.addWorkspaceListener(new WorkspaceListener() {
-
-         @Override
-         public void initialize(Workspace workspace) {
-         //workspace.add(new VizModel(VizController.this));
-         }
-
-         @Override
-         public void select(Workspace workspace) {
-         engine.reinit();
-         dataBridge.resetGraph();
-         }
-
-         @Override
-         public void unselect(Workspace workspace) {
-         }
-
-         @Override
-         public void close(Workspace workspace) {
-         }
-
-         @Override
-         public void disable() {
-         engine.reinit();
-         }
-         });
-
-         if (pc.getCurrentWorkspace() != null) {
-         engine.reinit();
-         }*/
     }
 
     public void setWorkspace(Workspace ws) {
         ws.add(new VizModel(this));
         ((DHNSDataBridge) dataBridge).setWorkspace(ws);
         engine.reinit();
+        
+        if(this == instances.get(0))
+            ws.add(new ForceAtlas2SIm(ws));
+        else
+            ws.add(new DirectionSim(ws));
     }
 
     public Workspace getWorkspace() {
@@ -205,7 +178,10 @@ public class VizController implements VisualizationController {
 
     public void importFinised(Workspace workspace) {
         final ProjectController projectController = Lookup.getDefault().lookup(ProjectController.class);
+        instance.setWorkspace(workspace);
         for (VizController v : instances) {
+            if (v == instance)
+                continue;
             Workspace d = projectController.duplicateWorkspace(workspace);
             v.setWorkspace(d);
         }

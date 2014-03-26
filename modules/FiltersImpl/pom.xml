@@ -61,6 +61,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <publicPackages>
+                        <publicPackage>org.gephi.filters</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

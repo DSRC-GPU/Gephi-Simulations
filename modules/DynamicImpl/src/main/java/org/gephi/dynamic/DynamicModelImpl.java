@@ -338,7 +338,7 @@ public final class DynamicModelImpl implements DynamicModel {
     public void setVisibleTimeInterval(TimeInterval visibleTimeInterval) {
         if (!Double.isNaN(visibleTimeInterval.getLow()) && !Double.isNaN(visibleTimeInterval.getHigh()) && !this.visibleTimeInterval.equals(visibleTimeInterval)) {
             this.visibleTimeInterval = visibleTimeInterval;
-
+            /*
             //Filters
             Query dynamicQuery = null;
             boolean selecting = false;
@@ -380,6 +380,7 @@ public final class DynamicModelImpl implements DynamicModel {
                     if (selecting) {
                         filterController.selectVisible(dynamicQuery);
                     } else {
+                        System.out.println("filterController filter");
                         filterController.filterVisible(dynamicQuery);
                     }
                 }
@@ -388,6 +389,7 @@ public final class DynamicModelImpl implements DynamicModel {
 
             // Trigger Event
             controller.fireModelEvent(new DynamicModelEvent(DynamicModelEvent.EventType.VISIBLE_INTERVAL, this, visibleTimeInterval));
+        */
         }
     }
 

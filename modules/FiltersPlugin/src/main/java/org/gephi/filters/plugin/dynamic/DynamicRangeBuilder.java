@@ -64,7 +64,6 @@ import org.gephi.filters.spi.NodeFilter;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
-import org.gephi.timeline.api.TimelineController;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -123,9 +122,8 @@ public class DynamicRangeBuilder implements CategoryBuilder {
         }
 
         public DynamicRangeFilter getFilter() {
-            TimelineController timelineController = Lookup.getDefault().lookup(TimelineController.class);
             DynamicController dynamicController = Lookup.getDefault().lookup(DynamicController.class);
-            return new DynamicRangeFilter(timelineController, dynamicController, nodeColumn, edgeColumn);
+            return new DynamicRangeFilter(dynamicController, nodeColumn, edgeColumn);
         }
 
         public JPanel getPanel(Filter filter) {
@@ -148,18 +146,16 @@ public class DynamicRangeBuilder implements CategoryBuilder {
         private AttributeColumn edgeColumn;
         private DynamicController dynamicController;
         private DynamicModel dynamicModel;
-        private TimelineController timelineController;
         private TimeInterval visibleInterval;
         private FilterProperty[] filterProperties;
         private Range range;
         private boolean keepNull = true;
 
-        public DynamicRangeFilter(TimelineController timelineController, DynamicController dynamicController, AttributeColumn nodeColumn, AttributeColumn edgeColumn) {
+        public DynamicRangeFilter(DynamicController dynamicController, AttributeColumn nodeColumn, AttributeColumn edgeColumn) {
             this.nodeColumn = nodeColumn;
             this.edgeColumn = edgeColumn;
             this.dynamicController = dynamicController;
             this.dynamicModel = dynamicController.getModel();
-            this.timelineController = timelineController;
         }
 
         public boolean init(Graph graph) {
@@ -242,7 +238,8 @@ public class DynamicRangeBuilder implements CategoryBuilder {
         }
 
         public void setRange(Range range) {
-            dynamicController.setVisibleInterval(range.getLowerDouble(), range.getUpperDouble());
+            visibleInterval = new TimeInterval(range.getLowerDouble(), range.getUpperDouble());
+            //dynamicController.setVisibleInterval(range.getLowerDouble(), range.getUpperDouble());
         }
 
         public void destroy() {

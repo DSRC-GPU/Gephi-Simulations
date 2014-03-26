@@ -132,19 +132,19 @@ public class DHNSDataBridge implements DataBridge, VizArchitecture, DynamicModel
 
         if (getWorkspace() == null) {
             engine.worldUpdated(cacheMarker);
-            System.out.println("WS = NULL update world");
+            //System.out.println("WS = NULL update world");
             return;
         }
         
-        System.out.println("WS = NOT NULL update world");
+        //System.out.println("WS = NOT NULL update world");
         GraphModel graphModel = controller.getModel(getWorkspace());
         if (graphModel == null) {
             engine.worldUpdated(cacheMarker);
-            System.out.println("MODEL = NULL update world");
+            //System.out.println("MODEL = NULL update world");
             return;
         }
         
-        System.out.println("MODEL = NOT NULL update world");
+        //System.out.println("MODEL = NOT NULL update world");
         if (gm != null && gm != graphModel) {
             reset();
         }
@@ -176,7 +176,7 @@ public class DHNSDataBridge implements DataBridge, VizArchitecture, DynamicModel
         graph.readLock();
 
 
-        System.out.println("graph nodes" + graph.getNodeCount());
+        //System.out.println("graph nodes" + graph.getNodeCount());
         
         ModelClass nodeClass = object3dClasses[AbstractEngine.CLASS_NODE];
         if (nodeClass.isEnabled() && (graph.getNodeVersion() > nodeVersion || modeManager.requireModeChange())) {
