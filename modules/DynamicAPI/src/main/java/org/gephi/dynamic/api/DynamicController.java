@@ -82,6 +82,7 @@ public interface DynamicController {
      * @param interval an object to get endpoints from
      */
     public void setVisibleInterval(TimeInterval interval);
+    public void setVisibleIntervalRaw(TimeInterval interval);
 
     /**
      * Sets the time interval wrapped by the {@code DynamicGraph} of the current
@@ -91,6 +92,7 @@ public interface DynamicController {
      * @param high the right endpoint
      */
     public void setVisibleInterval(double low, double high);
+    public void setVisibleIntervalRaw(double low, double high);
 
     /**
      * Sets the current time format. This should be done when the model is

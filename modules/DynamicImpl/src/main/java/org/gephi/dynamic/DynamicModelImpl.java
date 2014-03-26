@@ -117,7 +117,8 @@ public final class DynamicModelImpl implements DynamicModel {
      * @param low the left endpoint of the visible time interval
      * @param high the right endpoint of the visible time interval
      *
-     * @throws NullPointerException if {@code workspace} is null or the graph model and/or its underlying graph are nulls.
+     * @throws NullPointerException if {@code workspace} is null or the graph
+     * model and/or its underlying graph are nulls.
      */
     public DynamicModelImpl(DynamicControllerImpl controller, Workspace workspace, double low, double high) {
         if (workspace == null) {
@@ -338,7 +339,6 @@ public final class DynamicModelImpl implements DynamicModel {
     public void setVisibleTimeInterval(TimeInterval visibleTimeInterval) {
         if (!Double.isNaN(visibleTimeInterval.getLow()) && !Double.isNaN(visibleTimeInterval.getHigh()) && !this.visibleTimeInterval.equals(visibleTimeInterval)) {
             this.visibleTimeInterval = visibleTimeInterval;
-            /*
             //Filters
             Query dynamicQuery = null;
             boolean selecting = false;
@@ -380,16 +380,13 @@ public final class DynamicModelImpl implements DynamicModel {
                     if (selecting) {
                         filterController.selectVisible(dynamicQuery);
                     } else {
-                        System.out.println("filterController filter");
                         filterController.filterVisible(dynamicQuery);
                     }
                 }
             }
 
-
             // Trigger Event
             controller.fireModelEvent(new DynamicModelEvent(DynamicModelEvent.EventType.VISIBLE_INTERVAL, this, visibleTimeInterval));
-        */
         }
     }
 
@@ -406,7 +403,6 @@ public final class DynamicModelImpl implements DynamicModel {
 
     public void setTimeFormat(TimeFormat timeFormat) {
         this.timeFormat = timeFormat;
-
         controller.fireModelEvent(new DynamicModelEvent(DynamicModelEvent.EventType.TIME_FORMAT, this, timeFormat));
     }
 
@@ -446,5 +442,12 @@ public final class DynamicModelImpl implements DynamicModel {
     @Override
     public boolean hasDynamicNodes() {
         return attributeModel.getNodeTable().hasColumn(TIMEINTERVAL_COLUMN);
+    }
+
+    void setVisibleIntervalRaw(TimeInterval visibleTimeInterval) {
+        if (!Double.isNaN(visibleTimeInterval.getLow()) && !Double.isNaN(visibleTimeInterval.getHigh()) && !this.visibleTimeInterval.equals(visibleTimeInterval)) {
+            this.visibleTimeInterval = visibleTimeInterval;
+            controller.fireModelEvent(new DynamicModelEvent(DynamicModelEvent.EventType.VISIBLE_INTERVAL, this, visibleTimeInterval));
+        }
     }
 }

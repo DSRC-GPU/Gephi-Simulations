@@ -68,7 +68,6 @@ import org.gephi.filters.spi.FilterBuilder;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
-import org.gephi.graph.api.GraphView;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
@@ -110,12 +109,12 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
 
             @Override
             public void initialize(Workspace workspace) {
-                System.out.println("TimlineCotroller initialize");
+                //System.out.println("TimlineCotroller initialize");
             }
 
             @Override
             public void select(Workspace workspace) {
-                System.out.println("TimlineCotroller select");
+                //System.out.println("TimlineCotroller select");
                 model = workspace.getLookup().lookup(TimelineModelImpl.class);
                 if (model == null) {
                     model = new TimelineModelImpl(dynamicController.getModel(workspace));
@@ -127,7 +126,7 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
 
             @Override
             public void unselect(Workspace workspace) {
-                System.out.println("TimlineCotroller unselect");
+                //System.out.println("TimlineCotroller unselect");
                 unsetup();
             }
 
@@ -186,15 +185,15 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
             double newMax = event.getSource().getMax();
             double newMin = event.getSource().getMin();
             setMinMax(newMin, newMax);
-            System.out.println("dynamicModelChanged MAX_CHANGED");
+            //System.out.println("dynamicModelChanged MAX_CHANGED");
         } else if (event.getEventType().equals(DynamicModelEvent.EventType.VISIBLE_INTERVAL)) {
-            System.out.println("dynamicModelChanged VISIBLE_INTERVAL");
+            //System.out.println("dynamicModelChanged VISIBLE_INTERVAL");
             TimeInterval timeInterval = (TimeInterval) event.getData();
             double min = timeInterval.getLow();
             double max = timeInterval.getHigh();
             fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.INTERVAL, model, new double[]{min, max}));
         } else if (event.getEventType().equals(DynamicModelEvent.EventType.TIME_FORMAT)) {
-            System.out.println("dynamicModelChanged MODEL");
+            //System.out.println("dynamicModelChanged MODEL");
             fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.MODEL, model, null)); //refresh display
         }
     }
@@ -247,7 +246,7 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
 
     @Override
     public void setCustomBounds(double min, double max) {
-        System.err.println("setCustomBounds min: " + min + " max: " + max);
+        //System.err.println("setCustomBounds min: " + min + " max: " + max);
         if (model != null) {
             if (model.getCustomMin() != min || model.getCustomMax() != max) {
                 if (min >= max) {
@@ -283,6 +282,21 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
                 dynamicController.setVisibleInterval(new TimeInterval());
             }
         }
+    }
+
+    public void setIntervalRaw(double from, double to) {
+        if (model != null) {
+            if (model.getIntervalStart() != from || model.getIntervalEnd() != to) {
+                if (from >= to) {
+                    throw new IllegalArgumentException("from should be less than to");
+                }
+                if (from < model.getCustomMin() || to > model.getCustomMax()) {
+                    throw new IllegalArgumentException("From and to should be in the bounds");
+                }
+                dynamicController.setVisibleIntervalRaw(from, to);
+            }
+        }
+
     }
 
     @Override
@@ -419,9 +433,8 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
             from = Math.max(from, min);
             to = Math.min(to, max);
             System.out.println("from " + from + " to " + to);
-            setInterval(from, to);
+            setIntervalRaw(from, to);
             simModelRun(from, to);
-            fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.MODEL, model, new double[]{from, to}));
             return true;
         } else {
             stopPlay();
@@ -436,14 +449,15 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
             if (m == null) {
                 continue;
             }
-            //m.init();
+            m.init();
         }
     }
 
     private void simModelRun(double from, double to) {
-        
+
         dynamicRangeFilter.setRange(new Range(from, to));
         Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
+
         for (Workspace w : workspaces) {
 
             SimModel m = w.getLookup().lookup(SimModel.class);
@@ -451,12 +465,10 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
                 continue;
             }
 
-            System.out.println("Process start");
             GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(w);
             Graph result = processor.process((AbstractQueryImpl) dynamicQuery, graphModel);
-            System.out.println("Process done");
             graphModel.setVisibleView(result.getView());
-            m.run(0, 0);
+            m.run(from, to);
         }
     }
 
@@ -467,14 +479,13 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
             if (m == null) {
                 continue;
             }
-            //m.end();
+            m.end();
         }
     }
 
     @Override
     public void startPlay() {
         if (model != null && !model.isPlaying()) {
-            System.out.println("startPlay reached");
             model.setPlaying(true);
 
             playExecutor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
@@ -510,7 +521,7 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
         if (model != null && model.isPlaying()) {
             model.setPlaying(false);
             fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.PLAY_STOP, model, null));
-            System.out.println("stopPlay reached");
+            //System.out.println("stopPlay reached");
             simModelEnd();
         }
         if (playExecutor != null) {

@@ -68,7 +68,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = DynamicController.class)
 public final class DynamicControllerImpl implements DynamicController {
-    
+
     private DynamicModelImpl model;
     private List<DynamicModelListener> listeners;
     private DynamicModelEventDispatchThread eventThread;
@@ -83,14 +83,14 @@ public final class DynamicControllerImpl implements DynamicController {
         eventThread.start();
         setIntervalThread = new SetVisibleIntervalThread();
         setIntervalThread.start();
-        
+
         ProjectController projectController = Lookup.getDefault().lookup(ProjectController.class);
         projectController.addWorkspaceListener(new WorkspaceListener() {
             @Override
             public void initialize(Workspace workspace) {
                 workspace.add(new DynamicModelImpl(DynamicControllerImpl.this, workspace));
             }
-            
+
             @Override
             public void select(Workspace workspace) {
                 model = workspace.getLookup().lookup(DynamicModelImpl.class);
@@ -99,15 +99,15 @@ public final class DynamicControllerImpl implements DynamicController {
                     workspace.add(model);
                 }
             }
-            
+
             @Override
             public void unselect(Workspace workspace) {
             }
-            
+
             @Override
             public void close(Workspace workspace) {
             }
-            
+
             @Override
             public void disable() {
                 model = null;
@@ -128,7 +128,7 @@ public final class DynamicControllerImpl implements DynamicController {
             }
         }
     }
-    
+
     @Override
     public synchronized DynamicModelImpl getModel() {
         if (model == null) {
@@ -140,7 +140,7 @@ public final class DynamicControllerImpl implements DynamicController {
         }
         return model;
     }
-    
+
     @Override
     public synchronized DynamicModelImpl getModel(Workspace workspace) {
         if (workspace != null) {
@@ -154,7 +154,19 @@ public final class DynamicControllerImpl implements DynamicController {
         }
         return null;
     }
-    
+
+    @Override
+    public void setVisibleIntervalRaw(double low, double high) {
+        setVisibleIntervalRaw(new TimeInterval(low, high));
+    }
+
+    @Override
+    public void setVisibleIntervalRaw(TimeInterval interval) {
+        if (model != null) {
+            model.setVisibleIntervalRaw(interval);
+        }
+    }
+
     @Override
     public void setVisibleInterval(TimeInterval interval) {
         if (model != null) {
@@ -162,19 +174,19 @@ public final class DynamicControllerImpl implements DynamicController {
             //System.out.println("set visible interval "+interval);
         }
     }
-    
+
     @Override
     public void setVisibleInterval(double low, double high) {
         setVisibleInterval(new TimeInterval(low, high));
     }
-    
+
     @Override
     public void setTimeFormat(TimeFormat timeFormat) {
         if (model != null) {
             model.setTimeFormat(timeFormat);
         }
     }
-    
+
     @Override
     public void setTimeFormat(TimeFormat timeFormat, Workspace workspace) {
         DynamicModelImpl modelImpl = (DynamicModelImpl) getModel(workspace);
@@ -182,14 +194,14 @@ public final class DynamicControllerImpl implements DynamicController {
             modelImpl.setTimeFormat(timeFormat);
         }
     }
-    
+
     @Override
     public void setEstimator(Estimator estimator) {
         if (model != null) {
             model.setEstimator(estimator);
         }
     }
-    
+
     @Override
     public void setEstimator(Estimator estimator, Workspace workspace) {
         DynamicModelImpl modelImpl = (DynamicModelImpl) getModel(workspace);
@@ -197,14 +209,14 @@ public final class DynamicControllerImpl implements DynamicController {
             modelImpl.setEstimator(estimator);
         }
     }
-    
+
     @Override
     public void setNumberEstimator(Estimator numberEstimator) {
         if (model != null) {
             model.setNumberEstimator(numberEstimator);
         }
     }
-    
+
     @Override
     public void setNumberEstimator(Estimator numberEstimator, Workspace workspace) {
         DynamicModelImpl modelImpl = (DynamicModelImpl) getModel(workspace);
@@ -212,34 +224,34 @@ public final class DynamicControllerImpl implements DynamicController {
             modelImpl.setNumberEstimator(numberEstimator);
         }
     }
-    
+
     @Override
     public void addModelListener(DynamicModelListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
     }
-    
+
     @Override
     public void removeModelListener(DynamicModelListener listener) {
         listeners.remove(listener);
     }
-    
+
     public void fireModelEvent(DynamicModelEvent event) {
         eventThread.fireEvent(event);
     }
-    
+
     protected class SetVisibleIntervalThread extends Thread {
-        
+
         private boolean stop;
         private final AtomicReference<TimeInterval> lastInterval = new AtomicReference<TimeInterval>();
         private final Object lock = new Object();
-        
+
         public SetVisibleIntervalThread() {
             super("Dynamic Set Visible Interval Thread");
             setDaemon(true);
         }
-        
+
         @Override
         public void run() {
             while (!stop) {
@@ -247,7 +259,7 @@ public final class DynamicControllerImpl implements DynamicController {
                 if ((interval = lastInterval.getAndSet(null)) != null) {
                     model.setVisibleTimeInterval(interval);
                 }
-                
+
                 while (lastInterval.get() == null) {
                     try {
                         synchronized (lock) {
@@ -258,11 +270,11 @@ public final class DynamicControllerImpl implements DynamicController {
                 }
             }
         }
-        
+
         public void stop(boolean stop) {
             this.stop = stop;
         }
-        
+
         public void setVisibleTimeInterval(TimeInterval interval) {
             lastInterval.set(interval);
             synchronized (lock) {
@@ -270,19 +282,19 @@ public final class DynamicControllerImpl implements DynamicController {
             }
         }
     }
-    
+
     protected class DynamicModelEventDispatchThread extends Thread {
-        
+
         private boolean stop;
         private final LinkedBlockingQueue<DynamicModelEvent> eventQueue;
         private final Object lock = new Object();
-        
+
         public DynamicModelEventDispatchThread() {
             super("Dynamic Model EventDispatchThread");
             setDaemon(true);
             this.eventQueue = new LinkedBlockingQueue<DynamicModelEvent>();
         }
-        
+
         @Override
         public void run() {
             while (!stop) {
@@ -292,7 +304,7 @@ public final class DynamicControllerImpl implements DynamicController {
                         l.dynamicModelChanged(evt);
                     }
                 }
-                
+
                 while (eventQueue.isEmpty()) {
                     try {
                         synchronized (lock) {
@@ -303,11 +315,11 @@ public final class DynamicControllerImpl implements DynamicController {
                 }
             }
         }
-        
+
         public void stop(boolean stop) {
             this.stop = stop;
         }
-        
+
         public void fireEvent(DynamicModelEvent event) {
             eventQueue.add(event);
             synchronized (lock) {
