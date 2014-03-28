@@ -1,20 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package org.gephi.visualization;
+package org.gephi.simulation;
 
-import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeController;
-import org.gephi.data.attributes.api.AttributeModel;
 import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeTable;
 import org.gephi.data.attributes.api.AttributeType;
-import org.gephi.data.attributes.type.DoubleList;
 import org.gephi.data.attributes.type.FloatList;
-import org.gephi.datalab.api.AttributeColumnsController;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
@@ -22,22 +12,29 @@ import org.gephi.layout.plugin.forceAtlas2.ForceAtlas2;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author vlad
  */
+@ServiceProvider(service = SimModel.class)
 public class ForceAtlas2SIm extends SimModel {
 
     private GraphModel graphModel;
     private final ForceAtlas2 layout;
-    
 
-    public ForceAtlas2SIm(Workspace ws) {
-        super(ws);
-        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-        //pc.openWorkspace(ws);
+    public ForceAtlas2SIm() {
+        super();
+        setName("ForceAtlas2Sim");
         layout = new ForceAtlas2(null);
+    }
+
+    @Override
+    public void setWorkspace(Workspace ws) {
+        super.setWorkspace(ws);
+        ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
+        pc.openWorkspace(ws);
     }
 
     @Override
@@ -77,6 +74,8 @@ public class ForceAtlas2SIm extends SimModel {
         }
 
         for (Node n : graphModel.getGraph().getNodes()) {
+            n.getNodeData().setX((float) ((0.01 + Math.random()) * 1000) - 500);
+            n.getNodeData().setY((float) ((0.01 + Math.random()) * 1000) - 500);
             n.getAttributes().setValue("Direction", new FloatList(new Float[]{0f, 0f}));
             n.getAttributes().setValue("Position", new FloatList(new Float[]{n.getNodeData().x(), n.getNodeData().y()}));
         }

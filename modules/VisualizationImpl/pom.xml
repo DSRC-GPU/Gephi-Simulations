@@ -120,6 +120,12 @@
             <version>0.8.2</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.gephi</groupId>
+            <artifactId>simulation</artifactId>
+            <version>0.8.2</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

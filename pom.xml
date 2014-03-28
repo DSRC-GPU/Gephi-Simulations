@@ -1264,5 +1264,6 @@
         <module>modules/Gleem</module>
         <module>modules/CoreLibraryWrapper</module>
         <module>modules/UILibraryWrapper</module>
-    </modules>
+        <module>modules/Simulation</module>
+  </modules>
 </project>

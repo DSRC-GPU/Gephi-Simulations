@@ -72,9 +72,9 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
 import org.gephi.project.api.WorkspaceProvider;
+import org.gephi.simulation.SimModel;
 import org.gephi.timeline.api.*;
 import org.gephi.timeline.api.TimelineModel.PlayMode;
-import org.gephi.visualization.SimModel;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 

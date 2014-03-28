@@ -42,6 +42,7 @@
 package org.gephi.visualization;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import org.gephi.data.attributes.api.AttributeColumn;
@@ -70,6 +71,7 @@ import org.gephi.visualization.opengl.text.TextManager;
 import org.gephi.visualization.swing.GraphDrawableImpl;
 import org.gephi.visualization.swing.StandardGraphIO;
 import org.gephi.project.api.Workspace;
+import org.gephi.simulation.SimModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.apiimpl.ModelImpl;
 import org.gephi.visualization.opengl.text.TextModel;
@@ -85,18 +87,27 @@ public class VizController implements VisualizationController {
 
     //Singleton
     public static List<VizController> instances;
-    private static VizController instance;
+    private static VizController instance = null;
 
     public static void init() {
+        if (instances != null)
+            return;
+        
         instances = new ArrayList<VizController>();
+        instance = (VizController) Lookup.getDefault().lookup(VisualizationController.class);
+        instances.add(instance);
+        Collection<? extends SimModel> sims = Lookup.getDefault().lookupAll(SimModel.class);
+        if (sims.isEmpty()) {
+            System.err.println("No simModels found");
+            return;
+        } else {
+            System.err.println("SimModels found" + sims.size());
+        }
 
-        VizController a = new VizController();
-        instances.add(a);
-        instance = a;
-
-        VizController b = new VizController();
-        instances.add(b);
-        instance = b;
+        for (int i = 0; i < sims.size() - 1; i++) {
+            VizController a = new VizController();
+            instances.add(a);
+        }
     }
 
     public synchronized static VizController getInstance() {
@@ -105,6 +116,7 @@ public class VizController implements VisualizationController {
         }
         return instance;
     }
+
     //Architecture
     public SimModel sm;
     private Workspace ws;
@@ -162,14 +174,10 @@ public class VizController implements VisualizationController {
     }
 
     public void setWorkspace(Workspace ws) {
+        this.ws = ws;
         ws.add(new VizModel(this));
         ((DHNSDataBridge) dataBridge).setWorkspace(ws);
         engine.reinit();
-        
-        if(this == instances.get(0))
-            ws.add(new ForceAtlas2SIm(ws));
-        else
-            ws.add(new DirectionSim(ws));
     }
 
     public Workspace getWorkspace() {
@@ -178,12 +186,27 @@ public class VizController implements VisualizationController {
 
     public void importFinised(Workspace workspace) {
         final ProjectController projectController = Lookup.getDefault().lookup(ProjectController.class);
-        instance.setWorkspace(workspace);
+        init();
+
         for (VizController v : instances) {
-            if (v == instance)
+            if (v == instance) {
+                instance.setWorkspace(workspace);
                 continue;
+            }
             Workspace d = projectController.duplicateWorkspace(workspace);
             v.setWorkspace(d);
+        }
+
+        Collection<? extends SimModel> sims = Lookup.getDefault().lookupAll(SimModel.class);
+        SimModel[] simsArray = sims.toArray(new SimModel[0]);
+        if (simsArray.length == 0) {
+            System.err.println("No simModels found");
+            return;
+        }
+
+        for (int i = 0; i < simsArray.length; i++) {
+            Workspace w = instances.get(i).getWorkspace();
+            simsArray[i].setWorkspace(w);
         }
     }
 

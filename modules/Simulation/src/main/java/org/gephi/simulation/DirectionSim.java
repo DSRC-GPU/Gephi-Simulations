@@ -1,26 +1,25 @@
-package org.gephi.visualization;
+package org.gephi.simulation;
 
-import java.util.HashMap;
-import java.util.Hashtable;
 import org.gephi.data.attributes.type.FloatList;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
-import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author vlad
  */
+@ServiceProvider(service = SimModel.class)
 public class DirectionSim extends SimModel {
 
     private GraphModel graphModel;
     private final int axisLen = 700;
-
-    public DirectionSim(Workspace ws) {
-        super(ws);
+    
+    public DirectionSim() {
+        setName("DirectionSim");
     }
 
     private Node getNode(Node n, Graph g) {
@@ -100,7 +99,7 @@ public class DirectionSim extends SimModel {
         graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(ws);
         graphModel.getGraph().clearEdges();
         
-        //CreateAxis();
+        CreateAxis();
     }
 
     @Override
