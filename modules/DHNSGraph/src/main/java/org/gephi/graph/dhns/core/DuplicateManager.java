@@ -79,7 +79,8 @@ public class DuplicateManager {
         //Nodes
         for (TreeListIterator itr = new TreeListIterator(treeStructure.getTree(), 1); itr.hasNext();) {
             AbstractNode node = itr.next();
-            AbstractNode nodeCopy = factory.newNode();
+            
+            AbstractNode nodeCopy = factory.newNode(node.getNodeData().getId());
             duplicateNodeData(node.getNodeData(), nodeCopy.getNodeData());
             nodeCopy.setEnabled(node.isEnabled());
             nodeCopy.setEnabledInDegree(node.getEnabledInDegree());

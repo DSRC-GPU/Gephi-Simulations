@@ -21,14 +21,25 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = SimModel.class)
 public class ForceAtlas2SIm extends SimModel {
 
+
     private GraphModel graphModel;
+    private int step;
+    public final static int TIME_WINDOW = 20;
     private final ForceAtlas2 layout;
+    public final static String PREV_POSITION = "PrevPos";
+    public final static String X_VECTOR = "VectorXCoord";
+    public final static String Y_VECTOR = "VectorYCoord";
+    private final static int iters = 100;
+    //private final EdgeWeight edgeWeight;
 
     public ForceAtlas2SIm() {
         super();
+        priority = 1;
         setName("ForceAtlas2Sim");
-        layout = new ForceAtlas2(null);
+        layout = new ForceAtlas2(null);  
+        //edgeWeight = new EdgeWeight();
     }
+    
 
     @Override
     public void setWorkspace(Workspace ws) {
@@ -37,52 +48,79 @@ public class ForceAtlas2SIm extends SimModel {
         pc.openWorkspace(ws);
     }
 
+    private void addValue(Node n, float val, String column) {
+        FloatList vals = (FloatList) n.getAttributes().getValue(column);
+        int newSize = Math.min(TIME_WINDOW, vals.size() + 1);
+        Float[] nl = new Float[newSize];
+
+        for (int i = 0; i < newSize - 1; i++) {
+            nl[i + 1] = vals.getItem(i);
+        }
+
+        nl[0] = val;
+        n.getAttributes().setValue(column, new FloatList(nl));
+    }
+
     @Override
     public void run(double from, double to) {
+        //edgeWeight.setEdgeWeight(graphModel.getGraphVisible(), from, to);
         layout.setGraphModel(graphModel);
         layout.initAlgo();
+        System.err.println("ForceAtlas2Sim step: " + step);
 
-        for (int i = 0; i < 100 && layout.canAlgo(); i++) {
+        
+        for (int i = 0; i < iters && layout.canAlgo(); i++) {
             layout.goAlgo();
         }
 
         layout.endAlgo();
 
         for (Node n : graphModel.getGraphVisible().getNodes()) {
-            FloatList vals = (FloatList) n.getAttributes().getValue("Direction");
-            FloatList pos = (FloatList) n.getAttributes().getValue("Position");
-            if (vals == null) {
-                continue;
+            FloatList prevPos = (FloatList) n.getAttributes().getValue(PREV_POSITION);
+
+            float x = n.getNodeData().x();
+            float y = n.getNodeData().y();
+
+            float prevX = prevPos.getItem(0);
+            float prevY = prevPos.getItem(1);
+
+            if (step > 0) {
+                addValue(n, x - prevX, X_VECTOR);
+                addValue(n, y - prevY, Y_VECTOR);
             }
-            float x = vals.getItem(0) + n.getNodeData().x() - pos.getItem(0);
-            float y = vals.getItem(1) + n.getNodeData().y() - pos.getItem(1);
-            n.getAttributes().setValue("Direction", new FloatList(new Float[]{x, y}));
+
+            n.getAttributes().setValue(PREV_POSITION, new FloatList(new Float[]{x, y}));
         }
+        step++;
     }
 
     @Override
     public void init() {
+        step = 0;
         GraphModel gm = Lookup.getDefault().lookup(GraphController.class).getModel();
 
         graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(ws);
 
         AttributeController attributeController = Lookup.getDefault().lookup(AttributeController.class);
         AttributeTable nodesTable = attributeController.getModel(ws).getNodeTable();
-        if (nodesTable.hasColumn("Direction") == false) {
-            nodesTable.addColumn("Direction", AttributeType.LIST_FLOAT, AttributeOrigin.COMPUTED);
-            nodesTable.addColumn("Position", AttributeType.LIST_FLOAT, AttributeOrigin.COMPUTED);
+        if (nodesTable.hasColumn(PREV_POSITION) == false) {
+            nodesTable.addColumn(PREV_POSITION, AttributeType.LIST_FLOAT, AttributeOrigin.COMPUTED);
+            nodesTable.addColumn(X_VECTOR, AttributeType.LIST_FLOAT, AttributeOrigin.COMPUTED);
+            nodesTable.addColumn(Y_VECTOR, AttributeType.LIST_FLOAT, AttributeOrigin.COMPUTED);
         }
 
         for (Node n : graphModel.getGraph().getNodes()) {
-            n.getNodeData().setX((float) ((0.01 + Math.random()) * 1000) - 500);
-            n.getNodeData().setY((float) ((0.01 + Math.random()) * 1000) - 500);
-            n.getAttributes().setValue("Direction", new FloatList(new Float[]{0f, 0f}));
-            n.getAttributes().setValue("Position", new FloatList(new Float[]{n.getNodeData().x(), n.getNodeData().y()}));
+            float x = (float) ((0.01 + Math.random()) * 1000) - 500;
+            float y = (float) ((0.01 + Math.random()) * 1000) - 500;
+            n.getNodeData().setX(x);
+            n.getNodeData().setY(y);
+            n.getAttributes().setValue(PREV_POSITION, new FloatList(new Float[]{x, y}));
+            n.getAttributes().setValue(X_VECTOR, new FloatList(new Float[]{}));
+            n.getAttributes().setValue(Y_VECTOR, new FloatList(new Float[]{}));
         }
     }
 
     @Override
     public void end() {
     }
-
 }

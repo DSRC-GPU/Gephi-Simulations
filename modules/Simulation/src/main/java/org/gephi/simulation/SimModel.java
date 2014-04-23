@@ -10,10 +10,16 @@ import org.openide.util.Lookup;
  */
 public abstract class SimModel {
     
-    protected Workspace ws;
+    public Workspace ws;
     protected String name;
+    public int priority;
+    public int lastEdgeVersion;
+    public int lastNodeVersion;
     
     public SimModel() {
+        priority = 0;
+        lastEdgeVersion = -1;
+        lastNodeVersion = -1;      
     }
     
     public void setWorkspace(Workspace ws) {

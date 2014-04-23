@@ -42,7 +42,10 @@
 package org.gephi.timeline;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -65,9 +68,11 @@ import org.gephi.filters.api.Range;
 import org.gephi.filters.plugin.dynamic.DynamicRangeBuilder;
 import org.gephi.filters.plugin.dynamic.DynamicRangeBuilder.DynamicRangeFilter;
 import org.gephi.filters.spi.FilterBuilder;
+import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.Node;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
@@ -94,7 +99,8 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
     private final FilterController filterController;
     private DynamicRangeFilter dynamicRangeFilter;
     private Query dynamicQuery;
-    private FilterProcessor processor;
+    private final FilterProcessor processor;
+    private final Vector<SimModel> simulations;
 
     public TimelineControllerImpl() {
         listeners = new ArrayList<TimelineModelListener>();
@@ -104,6 +110,7 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
         dynamicController = Lookup.getDefault().lookup(DynamicController.class);
         filterController = Lookup.getDefault().lookup(FilterController.class);
         processor = new FilterProcessor();
+        simulations = new Vector<SimModel>();
 
         pc.addWorkspaceListener(new WorkspaceListener() {
 
@@ -172,6 +179,22 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
     private void setup() {
         fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.MODEL, model, null));
         dynamicController.addModelListener(this);
+        Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
+        for (Workspace w : workspaces) {
+            SimModel m = w.getLookup().lookup(SimModel.class);
+            if (m == null) {
+                System.err.println("Warning: simmodel is null for workspace: " + w);
+                continue;
+            }
+            simulations.add(m);
+        }
+
+        Collections.sort(simulations, new Comparator<SimModel>() {
+            @Override
+            public int compare(SimModel t, SimModel t1) {
+                return t.priority - t1.priority;
+            }
+        });
     }
 
     private void unsetup() {
@@ -432,7 +455,6 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
         if (someAction) {
             from = Math.max(from, min);
             to = Math.min(to, max);
-            System.out.println("from " + from + " to " + to);
             setIntervalRaw(from, to);
             simModelRun(from, to);
             return true;
@@ -443,44 +465,109 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
     }
 
     private void simModelInit() {
-        Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
-        for (Workspace w : workspaces) {
-            SimModel m = w.getLookup().lookup(SimModel.class);
-            if (m == null) {
-                continue;
-            }
-            m.init();
+        for (SimModel s : simulations) {
+            s.init();
         }
+        /*
+         Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
+         for (Workspace w : workspaces) {
+         SimModel m = w.getLookup().lookup(SimModel.class);
+         if (m == null) {
+         continue;
+         }
+         m.init();
+         }
+         */
+    }
+
+    private boolean hasChanged(Graph newGraph, Graph crrGraph) {
+        if (newGraph.getEdgeCount() != crrGraph.getEdgeCount()) {
+            return true;
+        }
+
+        if (newGraph.getNodeCount() != crrGraph.getNodeCount()) {
+            return true;
+        }
+
+        for (Edge e : newGraph.getEdges()) {
+            String id = e.getEdgeData().getId();
+            if (crrGraph.getEdge(id) == null) {
+                return true;
+            }
+        }
+
+        for (Edge e : crrGraph.getEdges()) {
+            String id = e.getEdgeData().getId();
+            if (newGraph.getEdge(id) == null) {
+                return true;
+            }
+        }
+
+        for (Node n : newGraph.getNodes()) {
+            String id = n.getNodeData().getId();
+            if (crrGraph.getNode(id) == null) {
+                return true;
+            }
+        }
+
+        for (Node n : crrGraph.getNodes()) {
+            String id = n.getNodeData().getId();
+            if (newGraph.getNode(id) == null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void simModelRun(double from, double to) {
 
-        dynamicRangeFilter.setRange(new Range(from, to));
-        Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
+        boolean check = false;
 
-        for (Workspace w : workspaces) {
+        for (SimModel s : simulations) {
+            GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(s.ws);
+            Graph result = processor.process((AbstractQueryImpl) dynamicQuery, graphModel);
 
-            SimModel m = w.getLookup().lookup(SimModel.class);
-            if (m == null) {
-                continue;
+            if (!check && !hasChanged(result, graphModel.getGraphVisible())) {
+                break;
             }
 
-            GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(w);
-            Graph result = processor.process((AbstractQueryImpl) dynamicQuery, graphModel);
+            check = true;
             graphModel.setVisibleView(result.getView());
-            m.run(from, to);
+            s.run(from, to);
         }
+        /*
+         Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
+
+         for (Workspace w : workspaces) {
+
+         SimModel m = w.getLookup().lookup(SimModel.class);
+         if (m == null) {
+         continue;
+         }
+
+         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(w);
+         Graph result = processor.process((AbstractQueryImpl) dynamicQuery, graphModel);
+         graphModel.setVisibleView(result.getView());
+         m.run(from, to);
+         }
+         */
     }
 
     private void simModelEnd() {
-        Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
-        for (Workspace w : workspaces) {
-            SimModel m = w.getLookup().lookup(SimModel.class);
-            if (m == null) {
-                continue;
-            }
-            m.end();
+        for (SimModel s : simulations) {
+            s.end();
         }
+        /*
+         Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
+         for (Workspace w : workspaces) {
+         SimModel m = w.getLookup().lookup(SimModel.class);
+         if (m == null) {
+         continue;
+         }
+         m.end();
+         }
+         */
     }
 
     @Override
