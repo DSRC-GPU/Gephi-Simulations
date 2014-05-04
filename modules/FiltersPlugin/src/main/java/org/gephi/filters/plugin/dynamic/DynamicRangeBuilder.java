@@ -210,12 +210,14 @@ public class DynamicRangeBuilder implements CategoryBuilder {
         }
 
         public void dynamicModelChanged(DynamicModelEvent event) {
+            /*
             switch (event.getEventType()) {
                 case VISIBLE_INTERVAL:
                     TimeInterval interval = (TimeInterval) event.getData();
                     getProperties()[0].setValue(new Range(interval.getLow(), interval.getHigh()));
                     break;
             }
+                    */
         }
 
         public FilterProperty getRangeProperty() {
