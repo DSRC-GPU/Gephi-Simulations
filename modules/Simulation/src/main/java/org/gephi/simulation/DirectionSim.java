@@ -140,7 +140,7 @@ public class DirectionSim extends SimModel {
     }
 
     @Override
-    public void run(double from, double to) {
+    public void run(double from, double to, boolean changed) {
         System.err.println("DirectionSim step: " + step);
         step++;
         if (step == 1) {
@@ -239,10 +239,12 @@ public class DirectionSim extends SimModel {
                 FloatList vals1 = getDirectionVector(n1);
                 for (Node n2 : otherGroup) {
                     FloatList vals2 = getDirectionVector(n2);
-                    count++;
                     double cs = CosineSimilarity.similarity(vals1, vals2);
-                    cosineSimResults.add(cs);
-                    groupSimilarity += cs;
+                    if (!Double.isNaN(cs)) {
+                        cosineSimResults.add(cs);
+                        groupSimilarity += cs;
+                        count++;
+                    }
                 }
             }
         } else {
@@ -250,10 +252,13 @@ public class DirectionSim extends SimModel {
                 FloatList vals1 = getDirectionVector(sameGroup.get(i));
                 for (int j = i + 1; j < sameGroup.size(); j++) {
                     FloatList vals2 = getDirectionVector(sameGroup.get(j));
-                    count++;
+
                     double cs = CosineSimilarity.similarity(vals1, vals2);
-                    cosineSimResults.add(cs);
-                    groupSimilarity += cs;
+                    if (!Double.isNaN(cs)) {
+                        cosineSimResults.add(cs);
+                        groupSimilarity += cs;
+                        count++;
+                    }
                 }
             }
         }

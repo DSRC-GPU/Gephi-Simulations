@@ -1,5 +1,6 @@
 package org.gephi.simulation;
 
+import java.util.Random;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeOrigin;
 import org.gephi.data.attributes.api.AttributeTable;
@@ -14,32 +15,28 @@ import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
-/**
- *
- * @author vlad
- */
 @ServiceProvider(service = SimModel.class)
 public class ForceAtlas2SIm extends SimModel {
 
+    public final static int TIME_WINDOW = 20;
+    private final static int iters = 100;
+    private final static int seed = 42;
 
     private GraphModel graphModel;
-    private int step;
-    public final static int TIME_WINDOW = 20;
     private final ForceAtlas2 layout;
     public final static String PREV_POSITION = "PrevPos";
     public final static String X_VECTOR = "VectorXCoord";
     public final static String Y_VECTOR = "VectorYCoord";
-    private final static int iters = 100;
-    //private final EdgeWeight edgeWeight;
+
+    private int step;
+    private EdgeWeight edgeWeight;
 
     public ForceAtlas2SIm() {
         super();
         priority = 1;
         setName("ForceAtlas2Sim");
-        layout = new ForceAtlas2(null);  
-        //edgeWeight = new EdgeWeight();
+        layout = new ForceAtlas2(null);
     }
-    
 
     @Override
     public void setWorkspace(Workspace ws) {
@@ -58,22 +55,33 @@ public class ForceAtlas2SIm extends SimModel {
         }
 
         nl[0] = val;
+        /*
+         System.err.print("ode: " + n.getNodeData().getId());
+         for (int i = 0; i < newSize; i++) {
+         System.err.print(" " + nl[i]);
+         }
+         System.err.println("");
+         */
         n.getAttributes().setValue(column, new FloatList(nl));
     }
 
     @Override
-    public void run(double from, double to) {
-        //edgeWeight.setEdgeWeight(graphModel.getGraphVisible(), from, to);
-        layout.setGraphModel(graphModel);
-        layout.initAlgo();
-        System.err.println("ForceAtlas2Sim step: " + step);
+    public void run(double from, double to, boolean changed) {
 
-        
-        for (int i = 0; i < iters && layout.canAlgo(); i++) {
-            layout.goAlgo();
+        System.err.println("ForceAtlas2Sim step: " + step + " changed " + changed);
+
+        if (changed) {
+            //edgeWeight.setEdgeWeight(graphModel.getGraphVisible(), from, to);
+            layout.setGraphModel(graphModel);
+            layout.initAlgo();
+            layout.setEdgeWeightInfluence((double) 0);
+
+            for (int i = 0; i < iters && layout.canAlgo(); i++) {
+                layout.goAlgo();
+            }
+
+            layout.endAlgo();
         }
-
-        layout.endAlgo();
 
         for (Node n : graphModel.getGraphVisible().getNodes()) {
             FloatList prevPos = (FloatList) n.getAttributes().getValue(PREV_POSITION);
@@ -91,13 +99,17 @@ public class ForceAtlas2SIm extends SimModel {
 
             n.getAttributes().setValue(PREV_POSITION, new FloatList(new Float[]{x, y}));
         }
-        step++;
+
+        if (changed) {
+            step++;
+        }
     }
 
     @Override
     public void init() {
         step = 0;
         GraphModel gm = Lookup.getDefault().lookup(GraphController.class).getModel();
+        edgeWeight = new EdgeWeight(ws);
 
         graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(ws);
 
@@ -110,8 +122,9 @@ public class ForceAtlas2SIm extends SimModel {
         }
 
         for (Node n : graphModel.getGraph().getNodes()) {
-            float x = (float) ((0.01 + Math.random()) * 1000) - 500;
-            float y = (float) ((0.01 + Math.random()) * 1000) - 500;
+            Random generator = new Random(seed);
+            float x = (float) ((0.01 + generator.nextDouble()) * 1000) - 500;
+            float y = (float) ((0.01 + generator.nextDouble()) * 1000) - 500;
             n.getNodeData().setX(x);
             n.getNodeData().setY(y);
             n.getAttributes().setValue(PREV_POSITION, new FloatList(new Float[]{x, y}));

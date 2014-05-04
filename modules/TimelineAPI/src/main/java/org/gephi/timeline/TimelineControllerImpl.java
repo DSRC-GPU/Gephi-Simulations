@@ -101,6 +101,7 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
     private Query dynamicQuery;
     private final FilterProcessor processor;
     private final Vector<SimModel> simulations;
+    private int step;
 
     public TimelineControllerImpl() {
         listeners = new ArrayList<TimelineModelListener>();
@@ -127,6 +128,7 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
                     model = new TimelineModelImpl(dynamicController.getModel(workspace));
                     workspace.add(model);
                 }
+
                 attributeModel = Lookup.getDefault().lookup(AttributeController.class).getModel(workspace);
                 setup();
             }
@@ -208,12 +210,12 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
             double newMax = event.getSource().getMax();
             double newMin = event.getSource().getMin();
             setMinMax(newMin, newMax);
-            //System.out.println("dynamicModelChanged MAX_CHANGED");
+            //System.out.println("dynamicModelChanged MAX_CHANGED max: " + newMax + " min: " + newMin);
         } else if (event.getEventType().equals(DynamicModelEvent.EventType.VISIBLE_INTERVAL)) {
-            //System.out.println("dynamicModelChanged VISIBLE_INTERVAL");
             TimeInterval timeInterval = (TimeInterval) event.getData();
             double min = timeInterval.getLow();
             double max = timeInterval.getHigh();
+            //System.out.println("dynamicModelChanged VISIBLE_INTERVAL max: " + max + " min: " + min);
             fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.INTERVAL, model, new double[]{min, max}));
         } else if (event.getEventType().equals(DynamicModelEvent.EventType.TIME_FORMAT)) {
             //System.out.println("dynamicModelChanged MODEL");
@@ -269,7 +271,7 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
 
     @Override
     public void setCustomBounds(double min, double max) {
-        //System.err.println("setCustomBounds min: " + min + " max: " + max);
+        System.err.println("setCustomBounds min: " + min + " max: " + max);
         if (model != null) {
             if (model.getCustomMin() != min || model.getCustomMax() != max) {
                 if (min >= max) {
@@ -523,18 +525,19 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
     private void simModelRun(double from, double to) {
 
         boolean check = false;
+        boolean changed = true;
 
         for (SimModel s : simulations) {
             GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(s.ws);
             Graph result = processor.process((AbstractQueryImpl) dynamicQuery, graphModel);
 
-            if (!check && !hasChanged(result, graphModel.getGraphVisible())) {
-                break;
+            if (step > 0 && !check) {
+                changed = hasChanged(result, graphModel.getGraphVisible());
+                check = true;
             }
 
-            check = true;
             graphModel.setVisibleView(result.getView());
-            s.run(from, to);
+            s.run(from, to, changed);
         }
         /*
          Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
@@ -589,12 +592,14 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
                 dynamicQuery = filterController.createQuery(dynamicRangeFilter);
             }
 
+            step = 0;
             simModelInit();
             playExecutor.scheduleAtFixedRate(new Runnable() {
 
                 @Override
                 public void run() {
                     playStep();
+                    step++;
                     //simModelRun();
                 }
             }, model.getPlayDelay(), model.getPlayDelay(), TimeUnit.MILLISECONDS);

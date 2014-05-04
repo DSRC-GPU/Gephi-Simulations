@@ -7,13 +7,14 @@ import org.gephi.data.attributes.type.TimeInterval;
 import org.gephi.dynamic.api.DynamicModel;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
+import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
 public class EdgeWeight {
 
     private final AttributeColumn edgeColumn;
 
-    public EdgeWeight() {
+    public EdgeWeight(Workspace ws) {
         AttributeModel am = Lookup.getDefault().lookup(AttributeController.class).getModel();
         edgeColumn = am.getEdgeTable().getColumn(DynamicModel.TIMEINTERVAL_COLUMN);
     }
@@ -35,8 +36,12 @@ public class EdgeWeight {
     }
     
     public void setEdgeWeight(Graph g, double from, double to) {
+        int duration = (int)to - (int)from;
+        float ratio;
         for (Edge e : g.getEdges()) {
-            System.err.println(" " + getEdgeWeighForInterval(from, to, e));          
+            ratio = getEdgeWeighForInterval(from, to, e) / duration;
+            e.setWeight(ratio);
+            //System.err.println(duration + " " + getEdgeWeighForInterval(from, to, e));          
         }
     }
 

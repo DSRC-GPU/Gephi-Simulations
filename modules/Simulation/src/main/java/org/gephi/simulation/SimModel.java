@@ -39,7 +39,7 @@ public abstract class SimModel {
         return this.name;
     }
     
-    public abstract void run(double from, double to);
+    public abstract void run(double from, double to, boolean changed);
     
     public abstract void init();
     

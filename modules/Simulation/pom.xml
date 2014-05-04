@@ -5,7 +5,7 @@
         <artifactId>gephi-parent</artifactId>
         <groupId>org.gephi</groupId>
         <version>0.8.2</version>
-		<relativePath>../..</relativePath>
+        <relativePath>../..</relativePath>
     </parent>
 
     <groupId>org.gephi</groupId>
@@ -21,15 +21,15 @@
             <artifactId>graph-api</artifactId>
         </dependency>
         <dependency>
-             <groupId>${project.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>project-api</artifactId>
         </dependency>
-         <dependency>
-             <groupId>${project.groupId}</groupId>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynamic-api</artifactId>
         </dependency>
         <dependency>
-             <groupId>${project.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>data-attributes-api</artifactId>
         </dependency>
         <dependency>

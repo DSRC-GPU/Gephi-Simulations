@@ -19,10 +19,12 @@ public class CosineSimilarity {
         
         if (mag1 == 0) {
             System.err.println("mag1 is zero");
+            return Double.NaN;
         }
         
         if (mag2 == 0) {
             System.err.println("mag2 is zero");
+            return Double.NaN;
         }
         
         return (x1 * x2 + y1 * y2) / (mag1 * mag2);
