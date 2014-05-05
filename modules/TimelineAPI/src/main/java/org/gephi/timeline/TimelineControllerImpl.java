@@ -178,9 +178,8 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
         return model;
     }
 
-    private void setup() {
-        fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.MODEL, model, null));
-        dynamicController.addModelListener(this);
+    private void initSimModels() {
+        simulations.clear();
         Workspace[] workspaces = pc.getCurrentProject().getLookup().lookup(WorkspaceProvider.class).getWorkspaces();
         for (Workspace w : workspaces) {
             SimModel m = w.getLookup().lookup(SimModel.class);
@@ -190,13 +189,18 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
             }
             simulations.add(m);
         }
-
         Collections.sort(simulations, new Comparator<SimModel>() {
             @Override
             public int compare(SimModel t, SimModel t1) {
                 return t.priority - t1.priority;
             }
         });
+        System.err.println("SimModels " + simulations.size());
+    }
+
+    private void setup() {
+        fireTimelineModelEvent(new TimelineModelEvent(TimelineModelEvent.EventType.MODEL, model, null));
+        dynamicController.addModelListener(this);
     }
 
     private void unsetup() {
@@ -593,6 +597,7 @@ public class TimelineControllerImpl implements TimelineController, DynamicModelL
             }
 
             step = 0;
+            initSimModels();
             simModelInit();
             playExecutor.scheduleAtFixedRate(new Runnable() {
 

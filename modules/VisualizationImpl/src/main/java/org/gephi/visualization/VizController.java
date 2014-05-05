@@ -89,19 +89,21 @@ public class VizController implements VisualizationController {
     public static List<VizController> instances;
     private static VizController instance = null;
 
-    public static void init() {
-        if (instances != null)
+    public synchronized static void init() {
+        if (instances != null) {
             return;
-        
-        instances = new ArrayList<VizController>();
+        }
+
         instance = (VizController) Lookup.getDefault().lookup(VisualizationController.class);
+        instances = new ArrayList<VizController>();
         instances.add(instance);
+        
         Collection<? extends SimModel> sims = Lookup.getDefault().lookupAll(SimModel.class);
         if (sims.isEmpty()) {
-            System.err.println("No simModels found");
+            System.err.println("[VizController]: No simModels found");
             return;
         } else {
-            System.err.println("SimModels found" + sims.size());
+            System.err.println("[VizController]: SimModels found" + sims.size());
         }
 
         for (int i = 0; i < sims.size() - 1; i++) {
@@ -200,8 +202,10 @@ public class VizController implements VisualizationController {
         Collection<? extends SimModel> sims = Lookup.getDefault().lookupAll(SimModel.class);
         SimModel[] simsArray = sims.toArray(new SimModel[0]);
         if (simsArray.length == 0) {
-            System.err.println("No simModels found");
+            System.err.println("[VizController]: No simModels found");
             return;
+        } else {
+            System.err.println("[VizController]: " + simsArray.length + " simModels found");
         }
 
         for (int i = 0; i < simsArray.length; i++) {

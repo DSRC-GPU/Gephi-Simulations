@@ -14,9 +14,7 @@ public class GroupSimilarity {
     private final ArrayList<Node> sameGroup;
     private final ArrayList<Node> otherGroup;
     private final ArrayList<Double> cosineSimResults;
-    
-    
-    
+      
     public GroupSimilarity() {
         sameGroup = new ArrayList<Node>();
         otherGroup = new ArrayList<Node>();

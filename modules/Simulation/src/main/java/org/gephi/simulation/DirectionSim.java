@@ -3,7 +3,6 @@ package org.gephi.simulation;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeOrigin;
@@ -26,8 +25,9 @@ public class DirectionSim extends SimModel {
 
     public boolean Scaling = true;
     public boolean Median = false;
-    private final int axisLen = 1000;
+    private final int axisLen = 700;
 
+    public final static String NAME = "DirectionSim";
     public final static String RES_VECTOR = "ResultVector";
     private int step;
     private GraphModel graphModel;
@@ -68,7 +68,7 @@ public class DirectionSim extends SimModel {
     }
 
     public DirectionSim() {
-        setName("DirectionSim");
+        setName(NAME);
         priority = 2;
         mmr = new MaxMinResults();
         xs = new Float[100];
@@ -140,6 +140,7 @@ public class DirectionSim extends SimModel {
     public void run(double from, double to, boolean changed) {
         System.err.println("DirectionSim step: " + step);
         step++;
+       
         if (step == 1) {
             return;
         }
