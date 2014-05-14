@@ -1,4 +1,3 @@
-
 package org.gephi.simulation;
 
 import java.io.PrintWriter;
@@ -6,21 +5,21 @@ import java.util.ArrayList;
 import org.gephi.data.attributes.type.FloatList;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
-import static org.gephi.simulation.DirectionSim.RES_VECTOR;
-
 
 public class GroupSimilarity {
-    
+
+    private final String columnName;
     private final ArrayList<Node> sameGroup;
     private final ArrayList<Node> otherGroup;
     private final ArrayList<Double> cosineSimResults;
-      
-    public GroupSimilarity() {
+
+    public GroupSimilarity(String columnName) {
+        this.columnName = columnName;
         sameGroup = new ArrayList<Node>();
         otherGroup = new ArrayList<Node>();
         cosineSimResults = new ArrayList<Double>();
     }
-    
+
     public void printGroupSimilarity(PrintWriter writer, int group, Graph graph) {
         double gs;
         writer.print(group);
@@ -32,8 +31,8 @@ public class GroupSimilarity {
         writer.print(" " + getStdDev(gs));
         writer.println();
     }
-    
-     public double getStdDev(double groupSimilarity) {
+
+    public double getStdDev(double groupSimilarity) {
         double sum = 0;
         for (Double d : cosineSimResults) {
             sum += Math.pow(d - groupSimilarity, 2);
@@ -66,25 +65,32 @@ public class GroupSimilarity {
                 FloatList vals1 = getDirectionVector(n1);
                 for (Node n2 : otherGroup) {
                     FloatList vals2 = getDirectionVector(n2);
+                    
                     double cs = CosineSimilarity.similarity(vals1, vals2);
                     if (!Double.isNaN(cs)) {
                         cosineSimResults.add(cs);
                         groupSimilarity += cs;
                         count++;
+                    } else {
+                        warn(false, "CosineSimilarity betweenGroups is Nan: " + n1.getId() + "[ " + vals1 + " ] " + n2.getId() + "[ " + vals2 + " ]");
                     }
                 }
             }
         } else {
             for (int i = 0; i < sameGroup.size(); i++) {
-                FloatList vals1 = getDirectionVector(sameGroup.get(i));
+                Node n1 = sameGroup.get(i);
+                FloatList vals1 = getDirectionVector(n1);
                 for (int j = i + 1; j < sameGroup.size(); j++) {
-                    FloatList vals2 = getDirectionVector(sameGroup.get(j));
+                    Node n2 = sameGroup.get(j);
+                    FloatList vals2 = getDirectionVector(n2);
 
                     double cs = CosineSimilarity.similarity(vals1, vals2);
                     if (!Double.isNaN(cs)) {
                         cosineSimResults.add(cs);
                         groupSimilarity += cs;
                         count++;
+                    } else {
+                        warn(false, "CosineSimilarity innerGroup is Nan: " + n1.getId() + "[ " + vals1 + " ] " + n2.getId() + "[ " + vals2 + " ]");
                     }
                 }
             }
@@ -93,18 +99,18 @@ public class GroupSimilarity {
         warn(count != 0, "Count is zero");
         return groupSimilarity / count;
     }
-    
-     private FloatList getDirectionVector(Node n) {
-        FloatList vals = (FloatList) n.getAttributes().getValue(RES_VECTOR);
+
+    private FloatList getDirectionVector(Node n) {
+        FloatList vals = (FloatList) n.getAttributes().getValue(columnName);
         warn(vals != null, "vals is null node: " + n);
         warn(vals.size() == 2, "vals size < 2: got: " + vals.size() + " node: " + n);
         return vals;
     }
-     
-      private void warn(boolean exp, String msg) {
+
+    private void warn(boolean exp, String msg) {
         if (!exp) {
-            System.err.println("WARNING: " + msg);
+            System.err.println("WARNING: GroupSimilarity: " + msg);
         }
     }
-    
+
 }

@@ -29,4 +29,13 @@ public class CosineSimilarity {
         
         return (x1 * x2 + y1 * y2) / (mag1 * mag2);
     }
+    
+    public static double angularSimilarity(FloatList l1, FloatList l2)
+    {
+        double cs = CosineSimilarity.similarity(l1, l2);
+        if (Double.isNaN(cs))
+            return Double.NaN;
+        
+        return 1 - (Math.acos(cs) / Math.PI);
+    }
 }

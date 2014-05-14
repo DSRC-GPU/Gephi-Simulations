@@ -18,7 +18,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = SimModel.class)
 public class ForceAtlas2SIm extends SimModel {
 
-    public final static int TIME_WINDOW = 20;
+    public final static int TIME_WINDOW = 10;
     private final static int iters = 100;
     private final static int seed = 42;
 
@@ -55,18 +55,11 @@ public class ForceAtlas2SIm extends SimModel {
         }
 
         nl[0] = val;
-        /*
-         System.err.print("ode: " + n.getNodeData().getId());
-         for (int i = 0; i < newSize; i++) {
-         System.err.print(" " + nl[i]);
-         }
-         System.err.println("");
-         */
         n.getAttributes().setValue(column, new FloatList(nl));
     }
 
     @Override
-    public void run(double from, double to, boolean changed) {
+    public synchronized void run(double from, double to, boolean changed) {
 
         System.err.println("ForceAtlas2Sim step: " + step + " changed " + changed);
 
@@ -121,8 +114,8 @@ public class ForceAtlas2SIm extends SimModel {
             nodesTable.addColumn(Y_VECTOR, AttributeType.LIST_FLOAT, AttributeOrigin.COMPUTED);
         }
 
+        Random generator = new Random(seed);
         for (Node n : graphModel.getGraph().getNodes()) {
-            Random generator = new Random(seed);
             float x = (float) ((0.01 + generator.nextDouble()) * 1000) - 500;
             float y = (float) ((0.01 + generator.nextDouble()) * 1000) - 500;
             n.getNodeData().setX(x);
